@@ -1,164 +1,241 @@
 # 대전 상권 데이터 분석
 
-2024~2026년 소상공인시장진흥공단 상가(상권)정보를 첨부 837→247 연계표의 목표 체계로 정규화해 대전의 지역·업종별 상가 수 변화를 분석한 코디세이 제출물이다. 데이터 정제, 품질 검증, 전분기·전년 동기 변화율, 시각화, 관찰과 해석의 구분을 포함한다.
+> **2024~2026년 대전광역시 상가(상권)정보를 최신 247개 업종 체계로 정규화하고, 상가 수 변화와 2024년 말 급증의 성격을 검토한 시계열 분석 프로젝트입니다.**
 
-- 결과: [REPORT.md](REPORT.md)
-- 메인 코드와 실행 결과: [analysis.ipynb](analysis.ipynb)
-- 구×업종×시점 집계: [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv)
-- 원본 목록·행 수·해시: [file_audit.csv](data/processed/file_audit.csv)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)](analysis.ipynb)
+[![Data](https://img.shields.io/badge/Data-Public_Data-0B5FFF)](https://www.data.go.kr/data/15083033/fileData.do)
+[![Status](https://img.shields.io/badge/Analysis-Verified-1F883D)](REPORT.md)
 
-## 먼저 알아둘 데이터 제약
+**바로가기:** [📘 전체 분석 리포트](REPORT.md) · [📓 실행 가능한 노트북](analysis.ipynb) · [📊 핵심 시계열 데이터](data/processed/daejeon_timeseries.csv) · [🔎 원본 파일 감사표](data/processed/file_audit.csv)
 
-메인 구간은 2025년 3월~2026년 6월이며, 2024년은 장기 비교와 품질 검토에 사용한다. 2024년 말에는 큰 수록 건수 증가가, 2026년 6월에는 큰 업소번호 교체가 있다. 등장·소멸을 창업·폐업으로 단정하지 않는다.
+---
 
-원본은 10개 관측월이고 분기말은 9개다. 2025년 9월 자료가 없고 10월 자료가 있어 10월은 보조 관측으로만 사용한다. 5개 구×10개 업종×10개 관측월의 **500개 패널 관측치**와 **100개 독립 시간 시점**은 다르다. 미션이 단일 시계열 100개 시점을 요구한다면 원자료가 부족하다. 없는 분기를 보간해 이 제약을 감추지 않았다.
+## 프로젝트를 한눈에 보기
 
-## 247개 체계 정규화
+| 항목 | 내용 |
+| --- | --- |
+| 분석 대상 | 대전광역시 5개 자치구의 상가(상권)정보 |
+| 분석 기간 | 2024-03 ~ 2026-06 |
+| 원본 규모 | CSV 10개, 관측 행 763,839개, 고유 업소번호 114,542개 |
+| 시계열 패널 | 5개 구 × 최신 대분류 10개 × 관측월 10개 = 500행 |
+| 핵심 비교 기간 | 2025-03 ~ 2026-06 |
+| 업종 정규화 | 기존 837개 → 최신 247개 업종 연계표 적용 |
+| 시각화 | 추세·지역·업종·증감률·업소 이동·변화 분해 등 PNG 6개 |
 
-기준 파일은 프로젝트 루트의 `[붙임]빅데이터플랫폼_업종분류_및_연계표.xlsx`다. 1번 시트의 목표 분류 247개와 3번 시트의 837→247 관계를 읽는다. 원본 엑셀과 CSV는 수정하지 않는다. “최신”은 첨부표의 목표 체계를 뜻하며, 이 파일만으로 체계 도입일을 확정하지 않는다.
+## 한눈에 보는 결론
 
-**모든 원본 CSV의 246개 소분류 코드는 이미 목표 247 체계에 속한다.** 구 837 체계로 가정해 다시 변환하지 않고 코드를 유지하며 정식 명칭을 통일했다. 정규화 전후 전체 및 대분류별 집계 차이는 0개다. 2024년 말 급증이 사라지지 않는다는 것이 결과이며, 수집범위 변화가 급증의 100%를 설명한다는 뜻은 아니다.
+1. **대전 전체 상가 수는 2025년 3월 77,904개에서 2026년 6월 80,704개로 2,800개(+3.59%) 증가했습니다.**
+2. **서구가 +1,167개(+4.39%)로 절대 증가량과 증가율 모두 가장 높았습니다.** 업종별로는 수리 및 개인 서비스업이 +725개로 가장 많이 늘었고, 숙박업은 +25.03%로 증가율이 가장 높았습니다.
+3. **2024년 9월에서 12월 사이에는 11,722개(+17.02%)가 급증했습니다.** 이때 신규 등장한 업소번호는 17,113개, 사라진 업소번호는 5,391개였습니다.
+4. **최신 247개 체계로 재분류해도 전체·대분류·증감률 결과는 바뀌지 않았습니다.** 원본 763,839개 행이 이미 최신 코드를 사용하고 있어, 업종체계 변경이 2024년 말 급증을 설명한 몫은 0개였습니다. 다만 업소번호 변화에는 실제 개·폐업과 수집범위 변경 등이 함께 섞일 수 있어 원인을 단정할 수 없습니다.
 
-- `classification.py`: 연계표 읽기, 코드 판별, 1:N 후보의 공통 상위 분류 결정, 추가 업종의 과거 결측 처리.
-- `test_mapping.py`: 실제 7개 1:N 관계와 유지·통합·제외, 추가 업종·미매핑의 경계 사례 검증.
-- `mapping_type`: 실제 코드 변환의 유지·통합·분리·제외 유형. 연계표에 없는 코드는 미매핑으로 표시한다. 현재 관측의 항등 매핑은 유지다.
-- `mapping_confidence`: 확률이 아니라 소분류확정·중분류확정·대분류확정·제외확정·미확정 수준이다.
-- `crosswalk_types`: 연계표 원문의 유지·통합·분리·제외·추가 비고를 보존한다. 이미 최신 코드인 업소의 실제 변환과 구분한다.
-- `is_added_category`: 목표 코드에 추가 범위가 있는지 여부. 추가 업종 이력표에서는 대상 분류의 `mapping_type=추가`도 기록한다.
+## 대표 시각화
 
-1:N에서 소분류가 불명확해도 중분류 또는 대분류가 공통이면 그 수준에서는 한 업소로 센다. 후보 소분류로 행을 늘리거나 비율 배분하지 않는다. 추가 업종의 구 체계 과거 대응이 없거나 일부만 있으면 전체 값은 결측으로 남기고 확인된 하한은 별도로 저장한다. 이번 원본처럼 최신 코드가 직접 관측된 경우에는 실제 관측값을 사용한다.
+### 전체 상가 수 추이
 
-원본 연계표 891행 중 완전 중복 2행을 관계 계산에서 제거했다. 추가 표기 42행은 고유 목표 코드 40개이며, 39개는 구 대응이 전혀 없고 `M11201`은 추가와 통합이 함께 있다. 실제 원본에는 40개 모두 모든 시점에 관측되므로 과거를 0으로 만들지 않는다.
+![대전 전체 상가 수 추이](images/01_total_store_trend.png)
 
-## 데이터 출처·수집 방법·이용 조건
+2024년 말의 불연속적인 증가를 확인한 뒤, 업종 재분류 효과와 업소번호 구성 변화를 별도로 검토했습니다.
 
-제공기관은 소상공인시장진흥공단이며, [공공데이터포털 상가(상권)정보](https://www.data.go.kr/data/15083033/fileData.do)에서 수집하여 사용자가 보관한 대전 CSV 10개를 분석했다. 이번 작업에서 원본을 새로 수집하거나 변경하지 않았다.
+### 자치구별 추이
 
-공식 페이지 확인일은 2026-09-05다. 해당 페이지의 설명은 분기 갱신, UTF-8, 전국 상권업종 분류 10·75·247개를 안내한다. 대전 파일에서 관측된 분류는 10·74·246개다. 해당 페이지의 이용허락범위는 **제한 없음**, 비용은 무료로 표시되어 있다. 재배포 시 출처와 기준시점을 표시하고, 다시 내려받을 때의 이용 조건과 첨부 안내도 확인한다. 공식 안내의 현재 체계가 과거 파일별 수집 범위의 동일성을 증명하지는 않는다.
+![자치구별 상가 수 추이](images/02_district_trend.png)
 
-원본을 준비하는 방법:
+### 업종별 증감과 변화 분해
 
-1. 위 공공데이터포털 페이지의 주기성 과거 데이터에서 각 기준시점 자료를 찾는다.
-2. 배포 압축파일에서 대전 지역 CSV를 추출한다. 전국 파일·다른 지역 파일은 넣지 않는다.
-3. 원본 파일명을 유지한 채 `data/raw/`에 넣는다. 이 작업공간에서는 기존 `00. 대전 상권 데이터/`를 그대로 읽는다. 두 폴더에 같은 시점 파일을 중복 배치하지 않는다.
-4. 필요한 기준월은 `202403, 202406, 202409, 202412, 202503, 202506, 202510, 202512, 202603, 202606`이다. 파일명은 `소상공인시장진흥공단_상가(상권)정보_대전_YYYYMM.csv` 형태다.
-5. [file_audit.csv](data/processed/file_audit.csv)의 SHA-256과 대조한다. 공식 포털에서 수정 배포했거나 과거 파일을 더 이상 제공하지 않아 해시가 다르면 이번 결과와 정확히 같은 입력이라고 간주하지 않는다.
+| 업종별 증감 | 분류체계·수집범위 변화 분해 |
+| --- | --- |
+| ![업종별 증감](images/03_category_growth.png) | ![변화 분해](images/06_classification_scope_decomposition.png) |
 
-2025년 10월 파일이 실제로 9월 조사를 뜻하는지 확인할 별도 원문은 확보하지 못했다. 따라서 이름을 9월로 바꾸지 않는다. 다운로드 인증이나 배포 링크 변동을 우회하는 수집 코드는 사용하지 않는다. 원본 약 407MB는 저장소 추적에서 제외하고, 재현용 집계 자료와 수집 방법을 제공한다.
+나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
 
-## 실행 환경
+## 무엇을 질문했나
 
-검증 환경은 **Python 3.14.6 / Windows**다. 미션의 Python 3.10 이상 조건에 해당한다. 고정 패키지 버전으로 재현하려면 Python 3.14를 권장한다. Python 3.10에서 이 고정 의존성 조합의 설치·실행을 보장하지 않는다.
+1. 2025년 3월부터 2026년 6월까지 대전 전체 상가 수는 어떻게 변했는가?
+2. 어느 자치구와 업종이 전체 증가를 주도했는가?
+3. 2024년 말 급증은 업종 분류체계 변경으로 설명할 수 있는가?
+4. 재분류 전후의 집계와 인사이트는 얼마나 달라지는가?
 
-한글 글꼴은 Windows의 맑은 고딕을 사용한다. macOS에서는 AppleGothic, Linux에서는 Noto Sans CJK KR 또는 나눔고딕을 설치하면 자동 선택한다. 해당 글꼴이 없으면 깨진 그림을 만들지 않고 명확한 오류를 낸다. 운영체제·글꼴에 따라 그림 픽셀은 달라질 수 있지만 집계 수치는 동일하다.
+## 왜 최신 247개 업종 체계로 정규화했나
 
-## 설치
+시점마다 업종 코드 체계가 다르면 같은 업종이 다른 이름으로 집계되거나, 통합·분리된 업종을 동일한 시계열로 잘못 비교할 수 있습니다. 프로젝트 루트의 업종 연계표를 기준으로 모든 원본을 최신 체계에 맞추고, 확정할 수 없는 관계는 임의 배분하지 않았습니다.
 
-프로젝트 폴더에서 실행한다. 이 작업공간에는 `.venv`가 이미 준비되어 있다.
+```mermaid
+flowchart LR
+    A[원본 CSV 10개] --> B[코드 체계 판별]
+    B --> C{최신 247 코드인가?}
+    C -->|예| D[코드 유지·명칭 표준화]
+    C -->|아니오| E[837→247 연계표 적용]
+    E --> F{1:N 분리인가?}
+    F -->|아니오| G[소분류 확정]
+    F -->|예| H{후보의 상위 분류가 같은가?}
+    H -->|예| I[공통 중·대분류에서만 집계]
+    H -->|아니오| J[비교 집계에서 제외]
+    D --> K[최신 대분류 시계열]
+    G --> K
+    I --> K
+    J --> L[매핑 감사표 기록]
+    K --> M[재분류 전후 비교]
+```
+
+### 매핑 원칙
+
+| 유형 | 처리 원칙 | 이번 원본에서 실제 적용 |
+| --- | --- | ---: |
+| 유지 | 동일 코드·분류를 유지 | 763,839행 |
+| 통합 | 여러 기존 업종을 하나의 최신 업종으로 통합 | 0행 |
+| 분리 | 1:N이면 임의 배분하지 않고 공통 상위 분류만 사용 | 0행 |
+| 제외 | 최신 체계에서 제외된 업종은 비교 집계에서 제외 | 0행 |
+| 추가 | 과거 대응값이 없으면 0이 아닌 결측으로 취급 | 0행* |
+
+\* 연계표의 신규 업종 40개는 원본 모든 시점에 최신 코드로 직접 관측되어 실제 관측값을 사용했습니다.
+
+각 레코드에는 `mapping_type`과 `mapping_confidence`를 기록했습니다. 연계표에는 실제 1:N 기존 코드가 7개 있으며, 그중 5개는 중분류까지만 확정할 수 있고 2개는 대분류도 확정할 수 없습니다. 하지만 분석 원본은 모두 최신 코드였으므로 상위 분류 매핑·제외·미확정으로 처리된 관측 행은 각각 0개입니다.
+
+## 2024년 말 급증은 어떻게 해석했나
+
+| 점검 항목 | 결과 | 해석 범위 |
+| --- | ---: | --- |
+| 전체 상가 수 변화 | +11,722개 (+17.02%) | 관측된 순증 |
+| 최신 업종체계 정규화 효과 | 0개 | 급증을 설명하지 않음 |
+| 유지 업소의 대분류 변경 | 754개, 순증 기여 0개 | 업종 이동은 총량을 바꾸지 않음 |
+| 등장 업소번호 | 17,113개 | 실제 창업·신규 수집·ID 재발급 등이 섞일 수 있음 |
+| 사라진 업소번호 | 5,391개 | 실제 폐업·수집 누락·ID 교체 등이 섞일 수 있음 |
+
+따라서 **분류체계 변경 효과는 0개로 분리**할 수 있습니다. 나머지 +11,722개는 업소번호 집합의 변화로 계산되지만, 제공된 파일만으로 실제 개·폐업과 전체 데이터 수집범위 변화의 몫을 다시 나눌 수는 없습니다.
+
+## 데이터 구성과 주의점
+
+원본은 [공공데이터포털의 소상공인시장진흥공단 상가(상권)정보](https://www.data.go.kr/data/15083033/fileData.do)에서 받은 대전 지역 CSV입니다. 원본 파일은 수정하지 않았으며 Git 저장소에는 용량과 재배포 조건을 고려해 포함하지 않았습니다. 재현 시 내려받은 파일을 `data/raw/`에 배치합니다.
+
+> [!IMPORTANT]
+> 관측월은 `202403, 202406, 202409, 202412, 202503, 202506, 202510, 202512, 202603, 202606`입니다. 2025년 9월 자료가 없고 10월 자료가 있으므로, 2025년 10월은 보조 관측치로만 사용했습니다.
+
+> [!NOTE]
+> 패널은 500행으로 과제의 100개 이상 데이터 포인트 조건을 충족하지만, 독립적인 분기말 시점은 9개입니다. 누락 분기를 보간하거나 임의로 만들지 않았습니다.
+
+> [!CAUTION]
+> 상가 수 증가는 실제 창업 수와 같지 않습니다. 등록 지연, 업소번호 교체, 수집범위 변화가 포함될 수 있습니다.
+
+## 빠르게 결과 확인하기
+
+코드를 실행하지 않아도 다음 세 파일만 보면 분석 전체를 파악할 수 있습니다.
+
+1. [REPORT.md](REPORT.md) — 질문, 전처리, 그래프, 관찰과 해석, 한계, AI 사용 로그
+2. [analysis.ipynb](analysis.ipynb) — 전처리부터 검증까지 실행 결과가 저장된 노트북
+3. [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) — 구 × 최신 대분류 × 관측월 기준 핵심 패널
+
+## 직접 재현하기
+
+### 1. 저장소와 환경 준비
 
 ```powershell
+git clone https://github.com/Frost0313z/daejeon-commercial-analysis.git
+cd daejeon-commercial-analysis
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-다른 운영체제에서는 `.venv/bin/python`을 사용한다.
+검증 환경은 Python 3.14.6 / Windows이며, 코드는 Python 3.10 이상을 대상으로 합니다.
 
-## 실행
+### 2. 원본 데이터 배치
+
+공공데이터포털에서 대전 지역 CSV를 내려받아 `data/raw/`에 넣습니다. 필요한 기준월은 아래 10개입니다.
+
+```text
+202403  202406  202409  202412  202503
+202506  202510  202512  202603  202606
+```
+
+파일명은 `소상공인시장진흥공단_상가(상권)정보_대전_YYYYMM.csv` 형식을 사용합니다. 다른 배포본을 사용하면 [file_audit.csv](data/processed/file_audit.csv)의 행 수와 SHA-256을 먼저 비교하세요.
+
+### 3. 분석 실행
 
 ```powershell
+# Jupyter에서 단계별 확인
 .\.venv\Scripts\python.exe -m jupyter notebook analysis.ipynb
-```
 
-노트북에서 커널을 다시 시작하고 모든 셀을 위에서 아래 순서로 실행한다. 첨부 연계표 읽기 → 원본 구조·품질 확인 → 업소번호 전이 → 정규화 → 집계·변화율 → 기존 결과 비교·변화 분해 → 독립 검증 → 그림 → 리포트 순서다. 노트북의 작업 디렉터리는 이 README가 있는 프로젝트 폴더여야 한다. 엑셀 연계표와 `classification.py`, `test_mapping.py`도 같은 위치에 둔다.
-
-화면 없이 전체 실행할 때:
-
-```powershell
+# 전체 자동 재실행
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=600 analysis.ipynb
-```
 
-실행하면 노트북의 출력, `data/processed/`, `images/`, `REPORT.md`를 갱신한다. 리포트의 수치는 분석 변수에서 자동 삽입되므로 직접 고치기보다 노트북의 분석·문장 셀을 수정한 뒤 다시 실행한다. 원본은 읽기만 한다.
-
-매핑 규칙만 빠르게 검증할 때:
-
-```powershell
+# 매핑 규칙만 빠르게 검증
 .\.venv\Scripts\python.exe test_mapping.py
 ```
 
-`before_normalization_timeseries.csv`는 수정 전 제출물의 500행 패널을 보존한 비교 기준이다. 매 실행마다 덮어쓰지 않으며, 노트북이 현재 원본에서 재계산한 결과와 대조한다. 원본을 다른 배포본으로 교체하면 이 비교 기준과 달라질 수 있으므로 차이를 검토해야 한다.
+노트북을 실행하면 `data/processed/`, `images/`, `REPORT.md`가 실제 계산 결과로 갱신됩니다.
+
+## 결과물 안내
+
+### 핵심 파일
+
+| 파일 | 역할 |
+| --- | --- |
+| [REPORT.md](REPORT.md) | 제출용 분석 리포트 |
+| [analysis.ipynb](analysis.ipynb) | 전체 분석 코드와 실행 결과 |
+| [classification.py](classification.py) | 연계표 해석과 업종 정규화 규칙 |
+| [test_mapping.py](test_mapping.py) | 유지·통합·분리·제외·추가 경계 사례 검증 |
+| [requirements.txt](requirements.txt) | 재현용 Python 의존성 |
+
+### 주요 가공 데이터
+
+| 파일 | 내용 |
+| --- | --- |
+| [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) | 구 × 최신 대분류 × 관측월 500행 패널 |
+| [normalized_store_records.csv.gz](data/processed/normalized_store_records.csv.gz) | 763,839개 관측의 정규화 코드·명칭·매핑 근거 |
+| [mapping_audit.csv](data/processed/mapping_audit.csv) | 매핑 유형·확정 수준별 실제 적용 건수 |
+| [legacy_mapping_resolution.csv](data/processed/legacy_mapping_resolution.csv) | 1:N 관계의 확정 가능 수준 |
+| [normalization_total_comparison.csv](data/processed/normalization_total_comparison.csv) | 정규화 전후 전체 집계 비교 |
+| [previous_panel_comparison.csv](data/processed/previous_panel_comparison.csv) | 기존 500행 패널과 재분류 결과 비교 |
+| [category_change_decomposition.csv](data/processed/category_change_decomposition.csv) | 업소 등장·이탈·유지·업종 이동 분해 |
+| [added_category_history.csv](data/processed/added_category_history.csv) | 신규 추가 업종의 시점별 실제 관측 여부 |
+
+<details>
+<summary><strong>전체 processed 데이터 설명 보기</strong></summary>
+
+- `total_quarterly.csv`, `total_observed.csv`: 분기말 및 전체 관측월 총계
+- `district_timeseries.csv`, `category_timeseries.csv`: 지역·업종별 수준과 변화율
+- `district_growth.csv`, `category_growth.csv`: 핵심 비교 기간의 증감
+- `small_category_timeseries.csv`, `middle_category_timeseries.csv`: 최신 소·중분류 집계
+- `taxonomy_247.csv`, `crosswalk_original_rows.csv`, `crosswalk_edges.csv`, `code_mapping.csv`: 목표 분류와 연계표 해석 결과
+- `mapping_usage.csv`, `normalization_name_changes.csv`, `normalization_source.json`: 매핑 적용과 명칭 변경 감사 자료
+- `normalization_category_comparison.csv`, `normalization_change_comparison.csv`: 정규화 전후 대분류·변화율 비교
+- `id_transitions.csv`, `common_reclassification_flows.csv`: 업소번호 이동과 대분류 변경 흐름
+- `schema.csv`, `missing_values.csv`, `classification_*.csv`, `administrative_*.csv`, `environment.json`: 데이터·실행 환경 품질 점검
+- `sensitivity.csv`: 종료 시점을 바꾼 민감도 분석
+
+</details>
 
 ## 폴더 구조
 
 ```text
-분석 과제/
-├── 00. 대전 상권 데이터/          # 기존 원본, 수정하지 않음·추적 제외
-├── data/
-│   ├── raw/                      # 다른 환경에서 내려받은 원본을 넣는 위치
-│   └── processed/                # 500행 패널 및 품질·집계·증감표
-├── images/
-│   ├── 01_total_store_trend.png
-│   ├── 02_district_trend.png
-│   ├── 03_category_growth.png
-│   ├── 04_district_category_heatmap.png
-│   ├── 05_id_turnover.png
-│   └── 06_classification_scope_decomposition.png
-├── analysis.ipynb
-├── classification.py
-├── test_mapping.py
-├── [붙임]빅데이터플랫폼_업종분류_및_연계표.xlsx
-├── REPORT.md
-├── README.md
-├── requirements.txt
-└── .gitignore
+daejeon-commercial-analysis/
+├─ data/
+│  ├─ raw/                     # 직접 내려받은 원본 CSV, Git 제외
+│  └─ processed/               # 정규화·집계·감사 결과
+├─ images/                     # 리포트 시각화 6개
+├─ analysis.ipynb              # 메인 분석
+├─ classification.py           # 업종 매핑 로직
+├─ test_mapping.py             # 최소 검증 스크립트
+├─ REPORT.md                   # 최종 분석 리포트
+├─ README.md
+└─ requirements.txt
 ```
 
-## 가공 데이터 설명
+## 검증 상태
 
-`daejeon_timeseries.csv`의 한 행은 구×대분류×관측월 하나다.
+- 원본 10개 파일의 행 수·해시·관측월 감사
+- 763,839개 행의 최신 코드 일치 여부와 매핑 근거 기록
+- 정규화 전후 전체·대분류·500행 패널·QoQ·YoY 차이 검증: **모두 0**
+- 실제 1:N 연계 7개와 제외·추가·미매핑 경계 사례 검증
+- 집계 합계, 증감률, 결측과 분모 0 처리 검증
+- 리포트 내 수치와 PNG 6개를 재계산 결과에 맞춰 갱신
 
-| 컬럼 | 의미 |
-| --- | --- |
-| period | 파일명 기준월, 1일로 표현 |
-| district / category | 자치구 / 상권업종 대분류명 |
-| store_count | 해당 조합에 수록된 상가 수 |
-| qoq_pct / yoy_pct | 정확히 3개월 전 / 12개월 전 대비 변화율, % |
-| quarter | 기준월이 속한 달력 분기, 10월도 4분기에 속함 |
-| is_quarter_end_snapshot | 3·6·9·12월 파일인지 여부 |
-| is_main | 메인 구간의 분기말 자료인지 여부 |
-| category_code | 첨부표 기준 최신 대분류 코드 |
-| confirmed_count | 확정 분류된 업소 수. 불확정 범위가 있으면 전체 수의 하한 |
-| coverage_status | 확정 집계인지 또는 분리·추가 범위 때문에 완전 비교가 어려운지 설명 |
+## 분석의 한계
 
-빈 변화율은 비교 시점이 없거나 분모가 0인 경우다. 10월 보조 관측의 변화율도 비워 둔다. 전체 관측월이 결측이면 0으로 채우지 않는다. 관측월 안에서 특정 구×업종에 해당 업소가 없을 때만 0개로 처리한다.
+- 독립적인 분기말 시점이 9개라 장기 계절성이나 예측 모델을 안정적으로 추정하기 어렵습니다.
+- 2025년 9월이 없어 10월 관측치를 분기말 자료처럼 사용하지 않았습니다.
+- 업소번호의 등장·이탈만으로 실제 개업·폐업과 행정·수집 과정의 변화를 구분할 수 없습니다.
+- 외부 경기, 인구, 금리, 유동인구 등 설명 변수를 결합하지 않아 변화 원인은 가설 수준으로 해석했습니다.
 
-- `total_quarterly.csv`: 누락된 2025년 9월도 빈 행으로 보존한 분기 시계열.
-- `total_observed.csv`: 10월을 포함한 실제 관측별 수치와 직전 관측 변화율. 직전 관측 비교는 분기 변화율과 다르다.
-- `district_timeseries.csv`, `category_timeseries.csv`: 구별·업종별 수와 전분기·전년 동기 변화율.
-- `*_growth.csv`: 시작·종료 수, 절대 증감, 증감률. `selected_middle_growth.csv`는 선택한 한 대분류의 중분류 결과.
-- `id_transitions.csv`: 유지·등장·소멸, 공통 업소의 구·대분류 변경, 상호·주소 일치 키 수. 교체율은 `(등장+소멸)/이전 업소 수×100`이다.
-- `schema.csv`, `missing_values.csv`, `classification_*.csv`, `administrative_*.csv`, `file_audit.csv`: 전체 품질 확인 자료.
-- `sensitivity.csv`: 종료 시점을 2026년 3월·6월로 바꾼 결과.
-- `environment.json`: 실제 실행 환경과 글꼴 정보.
-- `normalized_store_records.csv.gz`: 전체 763,839개 관측의 원본·정규화 코드와 명칭, 업소번호, 기준월, 구, 매핑 유형·확정 수준·후보·근거. 압축 CSV이며 `pd.read_csv(...)`로 바로 읽는다. 상호·상세 주소는 이 출력에 포함하지 않는다.
-- `taxonomy_247.csv`, `crosswalk_original_rows.csv`, `crosswalk_edges.csv`, `code_mapping.csv`: 목표 분류, 연계표 원문 행, 중복 제거 관계, 구·신 코드별 판정표.
-- `mapping_audit.csv`, `mapping_usage.csv`, `legacy_mapping_resolution.csv`: 실제 적용 건수와 구 체계 매핑의 확정 수준. 테스트·참조표 건수와 실제 적용 건수를 구분한다.
-- `small_category_timeseries.csv`, `middle_category_timeseries.csv`, `added_category_history.csv`: 목표 247·75개 분류별 관측 수와 추가 범위의 과거 대응 여부. 비교 불가 값은 결측이다.
-- `normalization_*comparison.csv`, `previous_panel_comparison.csv`: 전후 대분류·전체 집계와 기존 패널 비교.
-- `normalization_name_changes.csv`, `normalization_source.json`: 코드·명칭 변경 건수, 엑셀 해시·시트·범위.
-- `category_change_decomposition.csv`, `common_reclassification_flows.csv`: 등장·소멸·유지 업소의 업종 이동 분해와 이동 방향.
-- `category_growth_2024_2026.csv`: 최신 대분류의 2024년 3월~2026년 6월 전체 구간 증감. 기존 메인 구간의 `category_growth.csv`와 구분한다.
-
-## 검증과 제출 점검
-
-노트북은 표준 csv 모듈로 10개 원본 전체의 구×업종 집계를 다시 계산하여 pandas 결과와 대조한다. 집계 합계, 식별자 순변화 등식, 직접 계산한 변화율, 결측·분모 0 사례와 원본 해시를 검증한다. 최신 코드 일치·명칭 변경·기존 패널 대비 수치와 변화율, 업종별 변화 분해도 검증한다. 리포트에는 숫자가 있는 인사이트 5개, 그림 6개, 관찰·해석·후속 행동, 정규화 설명과 한계·AI 사용 로그를 포함했다.
-
-노트북의 모든 코드 셀 실행, 오류 출력 여부, 문서의 내부 파일 링크, PNG, 원본 CSV 및 연계표 해시, 패키지 의존성을 확인한다. 그림의 한글·축·범례·잘림도 검토한다.
-
-- 분석 질문 4개, 정제·품질 확인, 분석 기법 2개 이상: 포함.
-- PNG 6개와 정상 상대경로 링크: 포함.
-- 실행 결과가 저장된 메인 노트북, 환경 버전과 재현 명령: 포함.
-- 100개 이상 데이터 포인트: 패널 500개 기준 충족. 단일 시계열 100개 시점 기준으로는 미충족.
-- 깃허브에는 노트북·문서·그림·가공 자료·수집 방법을 올린다. `.venv`와 대용량 원본은 제외한다.
-- 보너스 대시보드·분해·예측은 수행하지 않았다. 짧고 불연속적인 시간축에 복잡한 분석을 추가하지 않았다.
-
-제출 전 본인이 설명할 내용은 “2024년 말 급증을 창업으로 단정할 수 없는 이유”, “2025년 12월의 전분기 변화율이 없는 이유”, “500개 패널 관측과 9개 시간 시점의 차이”다. 사용자가 아직 하지 않은 검토를 완료했다고 표시하지 않았다.
+분석 과정에서 AI는 전처리·시각화 코드 초안, 대안 탐색, 문장 정리에 사용했으며, 모든 수치는 노트북 재실행과 집계 대조로 검증했습니다. 상세 사용 범위와 검증 방법은 [REPORT.md의 AI 사용 로그](REPORT.md#10-ai-사용-로그)에 기록했습니다.
