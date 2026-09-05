@@ -1,0 +1,10 @@
+{
+  "file": "[붙임]빅데이터플랫폼_업종분류_및_연계표.xlsx",
+  "sha256": "89b6aae58262c89225752a5764ffa3901b174113aaa8c3edf148af25a1646986",
+  "taxonomy_sheet": "1. 상권_업종분류(247)",
+  "taxonomy_range": "A3:F249",
+  "crosswalk_sheet": "3. 상권_업종연계표(837-247)",
+  "crosswalk_range": "A3:I893",
+  "original_mapping_rows": 891,
+  "deduplicated_mapping_rows": 889
+}
