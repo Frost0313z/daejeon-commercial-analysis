@@ -1,6 +1,6 @@
 # 대전 상권 데이터 분석
 
-> **2024~2026년 대전광역시 상가(상권)정보를 최신 247개 업종 체계로 정규화하고, 상가 수 변화와 2024년 말 급증의 성격을 검토한 시계열 분석 프로젝트입니다.**
+> **2024~2026년 대전광역시 상가(상권)정보를 활용해 상가 수 변화와 2024년 말 급증의 성격을 검토한 시계열 분석 프로젝트입니다.**
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)](analysis.ipynb)
@@ -18,17 +18,15 @@
 | 분석 대상 | 대전광역시 5개 자치구의 상가(상권)정보 |
 | 분석 기간 | 2024-03 ~ 2026-06 |
 | 원본 규모 | CSV 10개, 관측 행 763,839개, 고유 업소번호 114,542개 |
-| 시계열 패널 | 5개 구 × 최신 대분류 10개 × 관측월 10개 = 500행 |
+| 시계열 패널 | 5개 구 × 대분류 10개 × 관측월 10개 = 500행 |
 | 핵심 비교 기간 | 2025-03 ~ 2026-06 |
-| 업종 정규화 | 기존 837개 → 최신 247개 업종 연계표 적용 |
-| 시각화 | 추세·지역·업종·증감률·업소 이동·변화 분해 등 PNG 6개 |
+| 시각화 | 추세·지역·업종·증감률·업소 이동 등 PNG 5개 |
 
 ## 한눈에 보는 결론
 
 1. **대전 전체 상가 수는 2025년 3월 77,904개에서 2026년 6월 80,704개로 2,800개(+3.59%) 증가했습니다.**
 2. **서구가 +1,167개(+4.39%)로 절대 증가량과 증가율 모두 가장 높았습니다.** 업종별로는 수리 및 개인 서비스업이 +725개로 가장 많이 늘었고, 숙박업은 +25.03%로 증가율이 가장 높았습니다.
 3. **2024년 9월에서 12월 사이에는 11,722개(+17.02%)가 급증했습니다.** 이때 신규 등장한 업소번호는 17,113개, 사라진 업소번호는 5,391개였습니다.
-4. **최신 247개 체계로 재분류해도 전체·대분류·증감률 결과는 바뀌지 않았습니다.** 원본 763,839개 행이 이미 최신 코드를 사용하고 있어, 업종체계 변경이 2024년 말 급증을 설명한 몫은 0개였습니다. 다만 업소번호 변화에는 실제 개·폐업과 수집범위 변경 등이 함께 섞일 수 있어 원인을 단정할 수 없습니다.
 
 ## 대표 시각화
 
@@ -36,17 +34,15 @@
 
 ![대전 전체 상가 수 추이](images/01_total_store_trend.png)
 
-2024년 말의 불연속적인 증가를 확인한 뒤, 업종 재분류 효과와 업소번호 구성 변화를 별도로 검토했습니다.
+2024년 말의 불연속적인 증가를 확인한 뒤 업소번호의 등장과 소멸을 별도로 검토했습니다.
 
 ### 자치구별 추이
 
 ![자치구별 상가 수 추이](images/02_district_trend.png)
 
-### 업종별 증감과 변화 분해
+### 업종별 증감
 
-| 업종별 증감 | 분류체계·수집범위 변화 분해 |
-| --- | --- |
-| ![업종별 증감](images/03_category_growth.png) | ![변화 분해](images/06_classification_scope_decomposition.png) |
+![업종별 증감](images/03_category_growth.png)
 
 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
 
@@ -54,56 +50,18 @@
 
 1. 2025년 3월부터 2026년 6월까지 대전 전체 상가 수는 어떻게 변했는가?
 2. 어느 자치구와 업종이 전체 증가를 주도했는가?
-3. 2024년 말 급증은 업종 분류체계 변경으로 설명할 수 있는가?
-4. 재분류 전후의 집계와 인사이트는 얼마나 달라지는가?
-
-## 왜 최신 247개 업종 체계로 정규화했나
-
-시점마다 업종 코드 체계가 다르면 같은 업종이 다른 이름으로 집계되거나, 통합·분리된 업종을 동일한 시계열로 잘못 비교할 수 있습니다. 프로젝트 루트의 업종 연계표를 기준으로 모든 원본을 최신 체계에 맞추고, 확정할 수 없는 관계는 임의 배분하지 않았습니다.
-
-```mermaid
-flowchart LR
-    A[원본 CSV 10개] --> B[코드 체계 판별]
-    B --> C{최신 247 코드인가?}
-    C -->|예| D[코드 유지·명칭 표준화]
-    C -->|아니오| E[837→247 연계표 적용]
-    E --> F{1:N 분리인가?}
-    F -->|아니오| G[소분류 확정]
-    F -->|예| H{후보의 상위 분류가 같은가?}
-    H -->|예| I[공통 중·대분류에서만 집계]
-    H -->|아니오| J[비교 집계에서 제외]
-    D --> K[최신 대분류 시계열]
-    G --> K
-    I --> K
-    J --> L[매핑 감사표 기록]
-    K --> M[재분류 전후 비교]
-```
-
-### 매핑 원칙
-
-| 유형 | 처리 원칙 | 이번 원본에서 실제 적용 |
-| --- | --- | ---: |
-| 유지 | 동일 코드·분류를 유지 | 763,839행 |
-| 통합 | 여러 기존 업종을 하나의 최신 업종으로 통합 | 0행 |
-| 분리 | 1:N이면 임의 배분하지 않고 공통 상위 분류만 사용 | 0행 |
-| 제외 | 최신 체계에서 제외된 업종은 비교 집계에서 제외 | 0행 |
-| 추가 | 과거 대응값이 없으면 0이 아닌 결측으로 취급 | 0행* |
-
-\* 연계표의 신규 업종 40개는 원본 모든 시점에 최신 코드로 직접 관측되어 실제 관측값을 사용했습니다.
-
-각 레코드에는 `mapping_type`과 `mapping_confidence`를 기록했습니다. 연계표에는 실제 1:N 기존 코드가 7개 있으며, 그중 5개는 중분류까지만 확정할 수 있고 2개는 대분류도 확정할 수 없습니다. 하지만 분석 원본은 모두 최신 코드였으므로 상위 분류 매핑·제외·미확정으로 처리된 관측 행은 각각 0개입니다.
+3. 어느 업종의 증가량과 증가율이 가장 높았는가?
+4. 2024년 말 급증과 업소번호 교체는 어떻게 해석해야 하는가?
 
 ## 2024년 말 급증은 어떻게 해석했나
 
 | 점검 항목 | 결과 | 해석 범위 |
 | --- | ---: | --- |
 | 전체 상가 수 변화 | +11,722개 (+17.02%) | 관측된 순증 |
-| 최신 업종체계 정규화 효과 | 0개 | 급증을 설명하지 않음 |
-| 유지 업소의 대분류 변경 | 754개, 순증 기여 0개 | 업종 이동은 총량을 바꾸지 않음 |
 | 등장 업소번호 | 17,113개 | 실제 창업·신규 수집·ID 재발급 등이 섞일 수 있음 |
 | 사라진 업소번호 | 5,391개 | 실제 폐업·수집 누락·ID 교체 등이 섞일 수 있음 |
 
-따라서 **분류체계 변경 효과는 0개로 분리**할 수 있습니다. 나머지 +11,722개는 업소번호 집합의 변화로 계산되지만, 제공된 파일만으로 실제 개·폐업과 전체 데이터 수집범위 변화의 몫을 다시 나눌 수는 없습니다.
+전체 +11,722개는 업소번호 집합의 변화로 계산되지만, 제공된 파일만으로 실제 개·폐업과 전체 데이터 수집범위 변화의 몫을 나눌 수는 없습니다.
 
 ## 데이터 구성과 주의점
 
@@ -124,7 +82,7 @@ flowchart LR
 
 1. [REPORT.md](REPORT.md) — 질문, 전처리, 그래프, 관찰과 해석, 한계, AI 사용 로그
 2. [analysis.ipynb](analysis.ipynb) — 전처리부터 검증까지 실행 결과가 저장된 노트북
-3. [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) — 구 × 최신 대분류 × 관측월 기준 핵심 패널
+3. [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) — 구 × 대분류 × 관측월 기준 핵심 패널
 
 ## 직접 재현하기
 
@@ -159,8 +117,6 @@ python -m venv .venv
 # 전체 자동 재실행
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=600 analysis.ipynb
 
-# 매핑 규칙만 빠르게 검증
-.\.venv\Scripts\python.exe test_mapping.py
 ```
 
 노트북을 실행하면 `data/processed/`, `images/`, `REPORT.md`가 실제 계산 결과로 갱신됩니다.
@@ -173,22 +129,14 @@ python -m venv .venv
 | --- | --- |
 | [REPORT.md](REPORT.md) | 제출용 분석 리포트 |
 | [analysis.ipynb](analysis.ipynb) | 전체 분석 코드와 실행 결과 |
-| [classification.py](classification.py) | 연계표 해석과 업종 정규화 규칙 |
-| [test_mapping.py](test_mapping.py) | 유지·통합·분리·제외·추가 경계 사례 검증 |
 | [requirements.txt](requirements.txt) | 재현용 Python 의존성 |
 
 ### 주요 가공 데이터
 
 | 파일 | 내용 |
 | --- | --- |
-| [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) | 구 × 최신 대분류 × 관측월 500행 패널 |
-| [normalized_store_records.csv.gz](data/processed/normalized_store_records.csv.gz) | 763,839개 관측의 정규화 코드·명칭·매핑 근거 |
-| [mapping_audit.csv](data/processed/mapping_audit.csv) | 매핑 유형·확정 수준별 실제 적용 건수 |
-| [legacy_mapping_resolution.csv](data/processed/legacy_mapping_resolution.csv) | 1:N 관계의 확정 가능 수준 |
-| [normalization_total_comparison.csv](data/processed/normalization_total_comparison.csv) | 정규화 전후 전체 집계 비교 |
-| [previous_panel_comparison.csv](data/processed/previous_panel_comparison.csv) | 기존 500행 패널과 재분류 결과 비교 |
+| [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) | 구 × 대분류 × 관측월 500행 패널 |
 | [category_change_decomposition.csv](data/processed/category_change_decomposition.csv) | 업소 등장·이탈·유지·업종 이동 분해 |
-| [added_category_history.csv](data/processed/added_category_history.csv) | 신규 추가 업종의 시점별 실제 관측 여부 |
 
 <details>
 <summary><strong>전체 processed 데이터 설명 보기</strong></summary>
@@ -196,12 +144,9 @@ python -m venv .venv
 - `total_quarterly.csv`, `total_observed.csv`: 분기말 및 전체 관측월 총계
 - `district_timeseries.csv`, `category_timeseries.csv`: 지역·업종별 수준과 변화율
 - `district_growth.csv`, `category_growth.csv`: 핵심 비교 기간의 증감
-- `small_category_timeseries.csv`, `middle_category_timeseries.csv`: 최신 소·중분류 집계
-- `taxonomy_247.csv`, `crosswalk_original_rows.csv`, `crosswalk_edges.csv`, `code_mapping.csv`: 목표 분류와 연계표 해석 결과
-- `mapping_usage.csv`, `normalization_name_changes.csv`, `normalization_source.json`: 매핑 적용과 명칭 변경 감사 자료
-- `normalization_category_comparison.csv`, `normalization_change_comparison.csv`: 정규화 전후 대분류·변화율 비교
+- `small_category_timeseries.csv`, `middle_category_timeseries.csv`: 소·중분류 집계
 - `id_transitions.csv`, `common_reclassification_flows.csv`: 업소번호 이동과 대분류 변경 흐름
-- `schema.csv`, `missing_values.csv`, `classification_*.csv`, `administrative_*.csv`, `environment.json`: 데이터·실행 환경 품질 점검
+- `schema.csv`, `missing_values.csv`, `administrative_*.csv`, `environment.json`: 데이터·실행 환경 품질 점검
 - `sensitivity.csv`: 종료 시점을 바꾼 민감도 분석
 
 </details>
@@ -212,11 +157,9 @@ python -m venv .venv
 daejeon-commercial-analysis/
 ├─ data/
 │  ├─ raw/                     # 직접 내려받은 원본 CSV, Git 제외
-│  └─ processed/               # 정규화·집계·감사 결과
-├─ images/                     # 리포트 시각화 6개
+│  └─ processed/               # 집계·품질 점검 결과
+├─ images/                     # 리포트 시각화 5개
 ├─ analysis.ipynb              # 메인 분석
-├─ classification.py           # 업종 매핑 로직
-├─ test_mapping.py             # 최소 검증 스크립트
 ├─ REPORT.md                   # 최종 분석 리포트
 ├─ README.md
 └─ requirements.txt
@@ -225,11 +168,8 @@ daejeon-commercial-analysis/
 ## 검증 상태
 
 - 원본 10개 파일의 행 수·해시·관측월 감사
-- 763,839개 행의 최신 코드 일치 여부와 매핑 근거 기록
-- 정규화 전후 전체·대분류·500행 패널·QoQ·YoY 차이 검증: **모두 0**
-- 실제 1:N 연계 7개와 제외·추가·미매핑 경계 사례 검증
 - 집계 합계, 증감률, 결측과 분모 0 처리 검증
-- 리포트 내 수치와 PNG 6개를 재계산 결과에 맞춰 갱신
+- 리포트 내 수치와 PNG 5개를 재계산 결과에 맞춰 갱신
 
 ## 분석의 한계
 
