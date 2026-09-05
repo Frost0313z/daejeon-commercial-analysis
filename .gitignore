@@ -1,0 +1,5 @@
+.venv/
+.ipynb_checkpoints/
+__pycache__/
+00. 대전 상권 데이터/
+data/raw/*.csv
