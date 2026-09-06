@@ -43,6 +43,20 @@ def growth(series: dict[str, dict[str, int]]) -> list[dict]:
     return sorted(result, key=lambda x: x["change"], reverse=True)
 
 
+def combination_growth(rows: list[dict]) -> list[dict]:
+    """자치구 × 업종 조합별 신뢰 구간 증감을 계산한다 (히트맵용)."""
+    counts: dict[tuple[str, str], dict[str, int]] = defaultdict(dict)
+    for row in rows:
+        if row["period"] in (START, END):
+            counts[(row["district"], row["category"])][row["period"]] = int(float(row["store_count"]))
+    result = []
+    for (district, category), values in counts.items():
+        start, end = values.get(START, 0), values.get(END, 0)
+        result.append({"district": district, "category": category, "start": start, "end": end,
+                       "change": end - start, "growth_pct": (end / start - 1) * 100 if start else 0.0})
+    return sorted(result, key=lambda x: (x["district"], x["category"]))
+
+
 def write_csv(name: str, rows: list[dict]) -> None:
     with (OUT / name).open("w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
@@ -160,12 +174,28 @@ def main() -> None:
     city = {p: sum(values.get(p, 0) for values in districts.values()) for p in periods}
     district_growth, category_growth = growth(districts), growth(categories)
     assert sum(r["change"] for r in district_growth) == sum(r["change"] for r in category_growth) == city[END] - city[START]
+    combination = combination_growth(rows)
+    assert sum(r["change"] for r in combination) == city[END] - city[START]
+    assert len(combination) == len(districts) * len(categories)
     summary = [{"start_period": START, "end_period": END, "start_count": city[START],
                 "end_count": city[END], "change": city[END] - city[START],
                 "growth_pct": (city[END] / city[START] - 1) * 100}]
     write_csv("reliable_period_summary.csv", summary)
     write_csv("reliable_period_district_growth.csv", district_growth)
     write_csv("reliable_period_category_growth.csv", category_growth)
+    write_csv("reliable_period_combination_growth.csv", combination)
+
+    # 대시보드는 사용자가 임의의 두 시점을 골라 비교할 수 있어야 하므로,
+    # 신뢰 구간(START~END)에 국한하지 않고 전체 10개 시점을 그대로 내보낸다.
+    full_districts = aggregate(panel, "district")
+    full_categories = aggregate(panel, "category")
+    full_periods = sorted({r["period"] for r in panel})
+    full_city = {p: sum(v.get(p, 0) for v in full_districts.values()) for p in full_periods}
+    assert full_city == dict(totals)
+    combinations: dict[str, dict[str, int]] = defaultdict(dict)
+    for row in panel:
+        combinations[f'{row["district"]}|{row["category"]}'][row["period"]] = int(float(row["store_count"]))
+    assert len(combinations) == len(full_districts) * len(full_categories)
 
     map_points = spatial_grids()
     assert END in map_points
@@ -179,9 +209,10 @@ def main() -> None:
     assert len(dong_codes) == 82
     assert all({r["dong_code"] for r in rows} == dong_codes for rows in metrics.values())
     assert set(metrics) == set(map_points)
-    payload = {"periods": periods, "city": city, "districts": districts,
-               "categories": categories, "districtGrowth": district_growth,
-               "categoryGrowth": category_growth, "mapPeriods": sorted(map_points),
+    payload = {"periods": full_periods, "city": full_city, "districts": full_districts,
+               "categories": full_categories, "combinations": combinations,
+               "reliableStart": START, "reliableEnd": END,
+               "mapPeriods": sorted(map_points),
                "mapPoints": map_points, "boundaries": boundaries,
                "dongBoundaries": dong_boundaries, "dongMetrics": metrics}
     template = (ROOT / "dashboard-template.html").read_text(encoding="utf-8")

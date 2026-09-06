@@ -6,8 +6,11 @@
   <title>대전 상권 변화 대시보드</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root{--bg:#f4f6f8;--surface:#fff;--text:#17212b;--muted:#687582;--line:#d9e0e7;--blue:#1769e0;--teal:#008c7a;--red:#d84848;--soft:#eaf2ff}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}main{max-width:1180px;margin:auto;padding:32px 22px 56px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}h2{font-size:20px;margin:0 0 16px}p{line-height:1.65}.sub{color:var(--muted);margin:0}.notice{margin-top:16px;padding:12px 14px;border-left:4px solid var(--blue);background:var(--soft);font-size:14px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.card,.panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px}.card{padding:18px}.label{font-size:13px;color:var(--muted)}.value{font-size:28px;font-weight:700;margin-top:6px}.positive{color:var(--teal)}.negative{color:var(--red)}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}.panel{padding:20px;margin-bottom:16px}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-size:13px;color:var(--muted);display:grid;gap:6px}select{min-width:190px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}svg{display:block;width:100%;height:auto}.axis{stroke:#aab4bf;stroke-width:1}.grid{stroke:#e4e9ee;stroke-width:1}.chart-line{fill:none;stroke:var(--blue);stroke-width:3}.chart-point{fill:var(--surface);stroke:var(--blue);stroke-width:3;cursor:pointer}.bar{cursor:pointer}.tooltip{position:fixed;pointer-events:none;opacity:0;background:#17212b;color:#fff;padding:8px 10px;border-radius:7px;font-size:12px;line-height:1.5;z-index:5;transition:opacity .1s}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.foot{font-size:13px;color:var(--muted);margin-top:14px}@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:460px){main{padding:22px 14px}.stats{grid-template-columns:1fr}.value{font-size:22px}.panel{padding:14px}select{min-width:0;width:100%}.controls label{width:100%}}
+    :root{--bg:#f4f6f8;--surface:#fff;--text:#17212b;--muted:#687582;--line:#d9e0e7;--blue:#1769e0;--teal:#008c7a;--red:#d84848;--soft:#eaf2ff}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}main{max-width:1180px;margin:auto;padding:32px 22px 56px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}h2{font-size:20px;margin:0 0 16px}p{line-height:1.65}.sub{color:var(--muted);margin:0}.notice{margin-top:16px;padding:12px 14px;border-left:4px solid var(--blue);background:var(--soft);font-size:14px}.notice.warn{border-left-color:var(--red);background:#fdeceb}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.card,.panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px}.card{padding:18px}.label{font-size:13px;color:var(--muted)}.value{font-size:28px;font-weight:700;margin-top:6px}.positive{color:var(--teal)}.negative{color:var(--red)}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}.panel{padding:20px;margin-bottom:16px}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-size:13px;color:var(--muted);display:grid;gap:6px}select{min-width:190px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}svg{display:block;width:100%;height:auto}.axis{stroke:#aab4bf;stroke-width:1}.grid{stroke:#e4e9ee;stroke-width:1}.chart-line{fill:none;stroke:var(--blue);stroke-width:3}.chart-point{fill:var(--surface);stroke:var(--blue);stroke-width:3;cursor:pointer}.bar{cursor:pointer}.tooltip{position:fixed;pointer-events:none;opacity:0;background:#17212b;color:#fff;padding:8px 10px;border-radius:7px;font-size:12px;line-height:1.5;z-index:5;transition:opacity .1s}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.foot{font-size:13px;color:var(--muted);margin-top:14px}@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:460px){main{padding:22px 14px}.stats{grid-template-columns:1fr}.value{font-size:22px}.panel{padding:14px}select{min-width:0;width:100%}.controls label{width:100%}}
     #map{height:520px;border:1px solid var(--line);border-radius:10px;background:#e9eef3}.map-note{margin-bottom:0}.density-filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}.density-filter>span{font-size:13px;color:var(--muted)}.density-filter label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer}.density-filter i{width:13px;height:13px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #9aa4af}.dong-legend{display:flex;align-items:center;gap:5px;min-height:22px;font-size:12px;color:var(--muted)}.dong-legend i{width:24px;height:10px;border-radius:2px}
+    .heatmap-wrap{overflow-x:auto}.heatmap-cell{cursor:pointer}.heatmap-legend{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-top:10px}.heatmap-legend i{width:24px;height:10px;border-radius:2px}
+    .series-checks{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;margin-bottom:16px}.series-checks label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer;font-size:13px}.series-checks i{width:12px;height:12px;border-radius:3px;display:inline-block}
+    .scatter-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}.scatter-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}.scatter-point{cursor:pointer}
     .period-slider{display:flex;align-items:center;gap:14px;margin-bottom:6px}.period-slider>span{font-size:13px;color:var(--muted);white-space:nowrap}.period-slider input{flex:1;min-width:0;accent-color:var(--blue);height:26px}.period-slider output{min-width:96px;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}.period-ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:14px}.period-ticks span{flex:1;text-align:center}.period-ticks span:first-child{text-align:left}.period-ticks span:last-child{text-align:right}.period-ticks .on{color:var(--blue);font-weight:700}@media(max-width:460px){.period-ticks{display:none}}
   </style>
 </head>
@@ -15,8 +18,13 @@
 <main>
   <header>
     <h1>대전 상권 변화 대시보드</h1>
-    <p class="sub">신뢰도 우선 분석 구간 · 2025년 3월 → 2026년 3월</p>
-    <div class="notice">2024년 말의 전국적 데이터 단절과 2026년 6월의 큰 업소번호 교체 구간을 주요 성장률 계산에서 제외했습니다.</div>
+    <p class="sub" id="periodSub"></p>
+    <div class="controls">
+      <label>비교 시작 시점<select id="periodStart"></select></label>
+      <label>비교 종료 시점<select id="periodEnd"></select></label>
+    </div>
+    <div class="notice">아래 핵심 지표·증감 그래프·히트맵·상세 결과는 여기서 고른 두 시점의 비교입니다. 기본값은 수집범위 변화가 안정된 신뢰도 우선 구간입니다.</div>
+    <div class="notice warn" id="periodWarning" hidden></div>
   </header>
   <section class="stats" aria-label="핵심 지표">
     <div class="card"><div class="label">시작 상가 수</div><div class="value" id="startValue"></div></div>
@@ -29,10 +37,10 @@
       <h2>관측 시점별 상가 수</h2>
       <div class="controls">
         <label>비교 단위<select id="seriesType"><option value="city">대전 전체</option><option value="district">자치구</option><option value="category">업종</option></select></label>
-        <label id="seriesLabel" hidden>항목<select id="seriesName"></select></label>
       </div>
+      <div class="series-checks" id="seriesChecks" hidden></div>
       <svg id="lineChart" viewBox="0 0 720 360" role="img" aria-label="관측 시점별 상가 수 선 그래프"></svg>
-      <p class="foot">2025년 9월 자료가 없어 6월과 12월 사이는 6개월 간격입니다. 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
+      <p class="foot">2024년 3월부터 2026년 6월까지 10개 관측 시점을 모두 표시합니다(2025년 10월은 정규 분기 외 보조 관측). 자치구·업종을 선택하면 여러 항목을 겹쳐 비교할 수 있습니다. 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
     </section>
     <section class="panel">
       <h2 id="barTitle">자치구별 증감</h2>
@@ -40,6 +48,12 @@
       <svg id="barChart" viewBox="0 0 520 410" role="img" aria-label="항목별 증감 막대 그래프"></svg>
     </section>
   </div>
+  <section class="panel">
+    <h2 id="heatmapTitle">자치구 × 업종 증감률</h2>
+    <div class="heatmap-wrap"><svg id="heatmapChart" viewBox="0 0 760 340" role="img" aria-label="자치구별 업종별 증감률 히트맵"></svg></div>
+    <div class="heatmap-legend" id="heatmapLegend"></div>
+    <p class="foot">칸에 마우스를 올리면 자치구·업종별 시작·종료 상가 수와 증감률을 확인할 수 있습니다.</p>
+  </section>
   <section class="panel">
     <h2 id="mapTitle">상가 위치 분포</h2>
     <div class="period-slider">
@@ -57,10 +71,14 @@
     <div class="dong-legend" id="dongLegend" hidden></div>
     <div id="map" role="img" aria-label="대전 상가 위치 분포 지도"></div>
     <p class="foot map-note">슬라이더를 드래그하면 2024년 3월부터 2026년 6월까지 관측 시점별 분포와 행정동 지표를 함께 확인할 수 있습니다. 위치 노출과 렌더링 속도를 고려해 좌표를 0.01도 격자(대략 1km)로 묶고, 각 원은 격자 안 상가들의 평균 위치에 놓았습니다. 원의 크기와 색은 선택 조건의 상가 밀도를 나타내며 전체 시점 공통 기준을 사용합니다. 행정동 색상은 공급 밀도·HHI·2024년 3월 고정 코호트 잔존율 중 선택할 수 있습니다. 행정동 경계: admdongkor/SGIS·행정안전부, 자치구 경계·배경 지도: OpenStreetMap contributors.</p>
+    <h3 style="margin:24px 0 10px;font-size:16px">이 시점의 행정동 공급밀도 × 업종 다양성(HHI)</h3>
+    <svg id="dongScatter" viewBox="0 0 640 380" role="img" aria-label="행정동 공급밀도와 업종 다양성 산점도"></svg>
+    <div class="scatter-legend" id="scatterLegend"></div>
+    <p class="foot">가로축은 인구 1,000명당 업소 수(로그 스케일), 세로축은 업종 집중도 HHI(낮을수록 다양)입니다. 위 슬라이더의 시점과 자치구 선택이 그대로 반영됩니다.</p>
   </section>
   <section class="panel">
     <h2 id="tableTitle">자치구별 상세 결과</h2>
-    <div style="overflow-x:auto"><table><thead><tr><th>항목</th><th>2025-03</th><th>2026-03</th><th>증감</th><th>증감률</th></tr></thead><tbody id="resultRows"></tbody></table></div>
+    <div style="overflow-x:auto"><table><thead><tr><th>항목</th><th id="colStart">2025-03</th><th id="colEnd">2026-03</th><th>증감</th><th>증감률</th></tr></thead><tbody id="resultRows"></tbody></table></div>
     <p class="foot">상가 수는 공공데이터 파일에 수록된 업소 수입니다. 매출·고용·실제 개폐업 건수를 의미하지 않습니다.</p>
   </section>
 </main>
@@ -68,16 +86,129 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const data=__DASHBOARD_DATA__,fmt=n=>n.toLocaleString('ko-KR'),pct=n=>`${n>=0?'+':''}${n.toFixed(2)}%`;
-const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesName=document.getElementById('seriesName'),seriesLabel=document.getElementById('seriesLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend');
-const cityStart=data.city['2025-03-01'],cityEnd=data.city['2026-03-01'];
-startValue.textContent=fmt(cityStart);endValue.textContent=fmt(cityEnd);changeValue.textContent=`+${fmt(cityEnd-cityStart)}`;growthValue.textContent=pct((cityEnd/cityStart-1)*100);
+const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesChecks=document.getElementById('seriesChecks'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend'),heatmapChart=document.getElementById('heatmapChart'),heatmapLegend=document.getElementById('heatmapLegend'),heatmapTitle=document.getElementById('heatmapTitle'),dongScatter=document.getElementById('dongScatter'),scatterLegend=document.getElementById('scatterLegend'),periodStart=document.getElementById('periodStart'),periodEnd=document.getElementById('periodEnd'),periodSub=document.getElementById('periodSub'),periodWarning=document.getElementById('periodWarning'),colStart=document.getElementById('colStart'),colEnd=document.getElementById('colEnd');
+const DISTRICT_PALETTE={'동구':'#185b79','중구':'#bb5b28','서구':'#5f793e','유성구':'#7b5596','대덕구':'#747474'};
+const CATEGORY_PALETTE=['#1769e0','#d84848','#008c7a','#f59e0b','#7c3aed','#0891b2','#be185d','#65a30d','#ea580c','#475569'];
+const CAUTION_PERIODS={'2024-12-01':'2024년 말 전국 단위 데이터 편입(1차 수집범위 확대)이 있었던 시점입니다.','2025-10-01':'정규 분기 말이 아닌 보조 관측월입니다.','2026-06-01':'업소번호 교체가 컸던 구간입니다.'};
+const shortLabel=p=>p.slice(0,7);
 const NS='http://www.w3.org/2000/svg',tip=document.getElementById('tooltip');
 function el(name,attrs={},text=''){const n=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));n.textContent=text;return n}
 function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;tip.style.left=`${e.clientX+12}px`;tip.style.top=`${e.clientY+12}px`}function hideTip(){tip.style.opacity=0}
-function currentSeries(){const type=seriesType.value;if(type==='city')return ['대전 전체',data.city];const source=type==='district'?data.districts:data.categories;return [seriesName.value,source[seriesName.value]]}
-function populateSeries(){const type=seriesType.value,show=type!=='city';seriesLabel.hidden=!show;if(show){const source=type==='district'?data.districts:data.categories;seriesName.innerHTML=Object.keys(source).sort().map(n=>`<option>${n}</option>`).join('')}drawLine()}
-function drawLine(){const svg=lineChart;svg.innerHTML='';const [name,series]=currentSeries(),values=data.periods.map(p=>series[p]),W=720,H=360,m={l:76,r:22,t:24,b:54};let lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*.2,20);lo-=pad;hi+=pad;const x=i=>m.l+i*(W-m.l-m.r)/(values.length-1),y=v=>m.t+(hi-v)*(H-m.t-m.b)/(hi-lo);for(let i=0;i<5;i++){let v=lo+(hi-lo)*i/4,Y=y(v);svg.append(el('line',{x1:m.l,x2:W-m.r,y1:Y,y2:Y,class:'grid'}));svg.append(el('text',{x:m.l-10,y:Y+4,'text-anchor':'end',fill:'#687582','font-size':12},fmt(Math.round(v))))}svg.append(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'axis'}));svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));const path=values.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}`).join(' ');svg.append(el('path',{d:path,class:'chart-line'}));data.periods.forEach((p,i)=>{const label=p.slice(0,7);svg.append(el('text',{x:x(i),y:H-24,'text-anchor':'middle',fill:'#687582','font-size':12},label));const c=el('circle',{cx:x(i),cy:y(values[i]),r:6,class:'chart-point','aria-label':`${name} ${label} ${fmt(values[i])}개`});c.addEventListener('mousemove',e=>showTip(e,`<b>${name}</b><br>${label} · ${fmt(values[i])}개`));c.addEventListener('mouseleave',hideTip);svg.append(c)})}
-function drawBars(){const rows=barType.value==='district'?data.districtGrowth:data.categoryGrowth,svg=barChart;svg.innerHTML='';barTitle.textContent=`${barType.value==='district'?'자치구':'업종'}별 증감`;tableTitle.textContent=`${barType.value==='district'?'자치구':'업종'}별 상세 결과`;const W=520,H=410,m={l:210,r:54,t:16,b:30},max=Math.max(...rows.map(r=>Math.abs(r.change))),zero=m.l+(W-m.l-m.r)/2,scale=v=>zero+v/max*(W-m.l-m.r)/2;rows.forEach((r,i)=>{const y=20+i*35,h=20;let x=Math.min(zero,scale(r.change)),w=Math.abs(scale(r.change)-zero);svg.append(el('text',{x:m.l-8,y:y+15,'text-anchor':'end',fill:'#17212b','font-size':11},r.name.length>26?r.name.slice(0,25)+'…':r.name));const b=el('rect',{x,y,width:Math.max(w,1),height:h,rx:3,fill:r.change>=0?'#008c7a':'#d84848',class:'bar','aria-label':`${r.name} ${r.change>=0?'+':''}${fmt(r.change)}개`});b.addEventListener('mousemove',e=>showTip(e,`<b>${r.name}</b><br>${r.change>=0?'+':''}${fmt(r.change)}개 · ${pct(r.growth_pct)}`));b.addEventListener('mouseleave',hideTip);svg.append(b);svg.append(el('text',{x:r.change>=0?scale(r.change)+6:scale(r.change)-6,y:y+15,'text-anchor':r.change>=0?'start':'end',fill:'#17212b','font-size':11},`${r.change>=0?'+':''}${fmt(r.change)}`))});svg.append(el('line',{x1:zero,x2:zero,y1:8,y2:H-m.b,class:'axis'}));resultRows.innerHTML=rows.map(r=>`<tr><td>${r.name}</td><td>${fmt(r.start)}</td><td>${fmt(r.end)}</td><td class="${r.change>=0?'positive':'negative'}">${r.change>=0?'+':''}${fmt(r.change)}</td><td class="${r.growth_pct>=0?'positive':'negative'}">${pct(r.growth_pct)}</td></tr>`).join('')}
+function growthRows(source,start,end){return Object.entries(source).map(([name,values])=>{const s=values[start]||0,e=values[end]||0;return {name,start:s,end:e,change:e-s,growth_pct:s?(e/s-1)*100:0}}).sort((a,b)=>b.change-a.change)}
+function combinationRows(start,end){return Object.entries(data.combinations).map(([key,values])=>{const [district,category]=key.split('|'),s=values[start]||0,e=values[end]||0;return {district,category,start:s,end:e,change:e-s,growth_pct:s?(e/s-1)*100:0}})}
+let districtGrowth=[],categoryGrowth=[],combinationGrowth=[];
+function populatePeriods(){
+  const opts=data.periods.map(p=>`<option value="${p}">${shortLabel(p)}</option>`).join('');
+  periodStart.innerHTML=opts;periodEnd.innerHTML=opts;
+  periodStart.value=data.periods.includes(data.reliableStart)?data.reliableStart:data.periods[0];
+  periodEnd.value=data.periods.includes(data.reliableEnd)?data.reliableEnd:data.periods.at(-1);
+}
+function updatePeriod(){
+  let start=periodStart.value,end=periodEnd.value;
+  if(data.periods.indexOf(start)>data.periods.indexOf(end)){[start,end]=[end,start];periodStart.value=start;periodEnd.value=end}
+  const cityStart=data.city[start],cityEnd=data.city[end];
+  startValue.textContent=fmt(cityStart);endValue.textContent=fmt(cityEnd);
+  changeValue.textContent=`${cityEnd-cityStart>=0?'+':''}${fmt(cityEnd-cityStart)}`;changeValue.className=`value ${cityEnd>=cityStart?'positive':'negative'}`;
+  growthValue.textContent=pct((cityEnd/cityStart-1)*100);growthValue.className=`value ${cityEnd>=cityStart?'positive':'negative'}`;
+  periodSub.textContent=`선택 비교 구간 · ${shortLabel(start)} → ${shortLabel(end)}`;
+  colStart.textContent=shortLabel(start);colEnd.textContent=shortLabel(end);
+  heatmapTitle.textContent=`자치구 × 업종 증감률 (${shortLabel(start)} → ${shortLabel(end)})`;
+  const warnings=[...new Set([start,end].filter(p=>CAUTION_PERIODS[p]))].map(p=>`${shortLabel(p)}: ${CAUTION_PERIODS[p]}`);
+  if(start<'2024-12-01'&&end>='2024-12-01'&&!CAUTION_PERIODS[start]&&!CAUTION_PERIODS[end])warnings.push('선택 구간에 2024년 말 수집범위 확대가 포함돼 있어 실제 증감보다 크게 나타날 수 있습니다.');
+  periodWarning.hidden=warnings.length===0;periodWarning.innerHTML=warnings.join('<br>');
+  districtGrowth=growthRows(data.districts,start,end);categoryGrowth=growthRows(data.categories,start,end);combinationGrowth=combinationRows(start,end);
+  drawBars();drawHeatmap();
+}
+let checkedSeries=new Set();
+function seriesColor(type,name,names){if(type==='district')return DISTRICT_PALETTE[name]||'#1769e0';return CATEGORY_PALETTE[names.indexOf(name)%CATEGORY_PALETTE.length]}
+function populateSeries(){
+  const type=seriesType.value,show=type!=='city';
+  seriesChecks.hidden=!show;
+  if(show){
+    const source=type==='district'?data.districts:data.categories,names=Object.keys(source).sort();
+    checkedSeries=new Set(names);
+    seriesChecks.innerHTML=names.map(n=>`<label><input type="checkbox" value="${n}" checked><i style="background:${seriesColor(type,n,names)}"></i>${n}</label>`).join('');
+    [...seriesChecks.querySelectorAll('input')].forEach(cb=>cb.addEventListener('change',()=>{cb.checked?checkedSeries.add(cb.value):checkedSeries.delete(cb.value);drawLine()}));
+  }
+  drawLine();
+}
+function currentSeriesList(){
+  const type=seriesType.value;
+  if(type==='city')return [{name:'대전 전체',color:'#1769e0',values:data.periods.map(p=>data.city[p])}];
+  const source=type==='district'?data.districts:data.categories,names=Object.keys(source).sort();
+  return names.filter(n=>checkedSeries.has(n)).map(n=>({name:n,color:seriesColor(type,n,names),values:data.periods.map(p=>source[n][p])}));
+}
+function drawLine(){
+  const svg=lineChart;svg.innerHTML='';
+  const seriesList=currentSeriesList();
+  if(!seriesList.length)return;
+  const W=720,H=360,m={l:76,r:22,t:24,b:54},allValues=seriesList.flatMap(s=>s.values);
+  let lo=Math.min(...allValues),hi=Math.max(...allValues),pad=Math.max((hi-lo)*.2,20);lo-=pad;hi+=pad;
+  const x=i=>m.l+i*(W-m.l-m.r)/(data.periods.length-1),y=v=>m.t+(hi-v)*(H-m.t-m.b)/(hi-lo);
+  for(let i=0;i<5;i++){let v=lo+(hi-lo)*i/4,Y=y(v);svg.append(el('line',{x1:m.l,x2:W-m.r,y1:Y,y2:Y,class:'grid'}));svg.append(el('text',{x:m.l-10,y:Y+4,'text-anchor':'end',fill:'#687582','font-size':12},fmt(Math.round(v))))}
+  svg.append(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'axis'}));
+  svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));
+  data.periods.forEach((p,i)=>svg.append(el('text',{x:x(i),y:H-24,'text-anchor':'middle',fill:'#687582','font-size':12},p.slice(0,7))));
+  seriesList.forEach(s=>{
+    const path=s.values.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}`).join(' ');
+    svg.append(el('path',{d:path,fill:'none',stroke:s.color,'stroke-width':3}));
+    s.values.forEach((v,i)=>{
+      const label=data.periods[i].slice(0,7);
+      const c=el('circle',{cx:x(i),cy:y(v),r:5,fill:'#fff',stroke:s.color,'stroke-width':3,class:'chart-point','aria-label':`${s.name} ${label} ${fmt(v)}개`});
+      c.addEventListener('mousemove',e=>showTip(e,`<b>${s.name}</b><br>${label} · ${fmt(v)}개`));
+      c.addEventListener('mouseleave',hideTip);
+      svg.append(c);
+    });
+  });
+}
+function drawHeatmap(){
+  const svg=heatmapChart;svg.innerHTML='';
+  const DISTRICT_ORDER=['동구','중구','서구','유성구','대덕구'],categories=Object.keys(data.categories).sort();
+  const byKey=Object.fromEntries(combinationGrowth.map(r=>[`${r.district}|${r.category}`,r]));
+  const W=760,H=340,m={l:150,r:20,t:10,b:120},cw=(W-m.l-m.r)/categories.length,ch=(H-m.t-m.b)/DISTRICT_ORDER.length;
+  const bound=Math.max(1,...combinationGrowth.map(r=>Math.abs(r.growth_pct)));
+  const toRGB=hex=>[0,2,4].map(i=>parseInt(hex.slice(i,i+2),16)),lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+  const red=toRGB('d84848'),teal=toRGB('008c7a'),mid=[244,242,238];
+  function color(v){const t=Math.max(-1,Math.min(1,v/bound));const from=t<0?red:mid,to=t<0?mid:teal,tt=t<0?t+1:t;return `rgb(${from.map((c,i)=>lerp(c,to[i],tt)).join(',')})`}
+  DISTRICT_ORDER.forEach((district,ri)=>{
+    svg.append(el('text',{x:m.l-10,y:m.t+ri*ch+ch/2+4,'text-anchor':'end',fill:'#17212b','font-size':12},district));
+    categories.forEach((category,ci)=>{
+      const row=byKey[`${district}|${category}`];if(!row)return;
+      const x=m.l+ci*cw,y=m.t+ri*ch;
+      const rect=el('rect',{x:x+1,y:y+1,width:cw-2,height:ch-2,rx:4,fill:color(row.growth_pct),class:'heatmap-cell'});
+      rect.addEventListener('mousemove',e=>showTip(e,`<b>${district} · ${category}</b><br>${fmt(row.start)} → ${fmt(row.end)}개 (${row.change>=0?'+':''}${fmt(row.change)})<br>${pct(row.growth_pct)}`));
+      rect.addEventListener('mouseleave',hideTip);
+      svg.append(rect);
+    });
+  });
+  categories.forEach((category,ci)=>{
+    const x=m.l+ci*cw+cw/2,y=H-m.b+14;
+    svg.append(el('text',{x,y,'text-anchor':'end',fill:'#687582','font-size':11,transform:`rotate(-40 ${x} ${y})`},category));
+  });
+  const steps=[-bound,-bound/2,0,bound/2,bound].map(color);
+  heatmapLegend.innerHTML=`<span>${pct(-bound)}</span>${steps.map(c=>`<i style="background:${c}"></i>`).join('')}<span>${pct(bound)}</span>`;
+}
+function drawDongScatter(){
+  if(!dongScatter)return;
+  const svg=dongScatter;svg.innerHTML='';
+  const period=data.mapPeriods[+mapPeriod.value],rows=data.dongMetrics[period].filter(r=>!mapDistrict.value||r.district===mapDistrict.value);
+  const W=640,H=380,m={l:64,r:20,t:16,b:46},xs=rows.map(r=>r.density),ys=rows.map(r=>r.hhi);
+  const xlo=Math.log10(Math.max(1,Math.min(...xs)*.85)),xhi=Math.log10(Math.max(...xs)*1.15);
+  const ylo=Math.min(...ys)*.9,yhi=Math.max(...ys)*1.08;
+  const x=v=>m.l+(Math.log10(Math.max(1,v))-xlo)/(xhi-xlo)*(W-m.l-m.r),y=v=>m.t+(yhi-v)/(yhi-ylo)*(H-m.t-m.b);
+  for(let i=0;i<=4;i++){const Y=m.t+i*(H-m.t-m.b)/4,v=yhi-(yhi-ylo)*i/4;svg.append(el('line',{x1:m.l,x2:W-m.r,y1:Y,y2:Y,class:'grid'}));svg.append(el('text',{x:m.l-8,y:Y+4,'text-anchor':'end',fill:'#687582','font-size':11},v.toFixed(2)))}
+  svg.append(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'axis'}));
+  svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));
+  svg.append(el('text',{x:(m.l+W-m.r)/2,y:H-8,'text-anchor':'middle',fill:'#687582','font-size':11},'인구 1,000명당 업소 수 (로그 스케일)'));
+  rows.forEach(r=>{
+    const c=el('circle',{cx:x(r.density),cy:y(r.hhi),r:5,fill:DISTRICT_PALETTE[r.district]||'#1769e0',stroke:'#fff','stroke-width':1,opacity:.85,class:'scatter-point'});
+    c.addEventListener('mousemove',e=>showTip(e,`<b>${r.district} ${r.dong}</b><br>밀도 ${r.density.toFixed(1)}개/천명 · HHI ${r.hhi.toFixed(3)}`));
+    c.addEventListener('mouseleave',hideTip);
+    svg.append(c);
+  });
+  if(scatterLegend)scatterLegend.innerHTML=Object.entries(DISTRICT_PALETTE).map(([d,c])=>`<span><i style="background:${c}"></i>${d}</span>`).join('');
+}
+function drawBars(){const rows=barType.value==='district'?districtGrowth:categoryGrowth,svg=barChart;svg.innerHTML='';const unitLabel=barType.value==='district'?'자치구':'업종';barTitle.textContent=`${unitLabel}별 증감 (${shortLabel(periodStart.value)} → ${shortLabel(periodEnd.value)})`;tableTitle.textContent=`${unitLabel}별 상세 결과`;const W=520,H=410,m={l:210,r:54,t:16,b:30},max=Math.max(...rows.map(r=>Math.abs(r.change))),zero=m.l+(W-m.l-m.r)/2,scale=v=>zero+v/max*(W-m.l-m.r)/2;rows.forEach((r,i)=>{const y=20+i*35,h=20;let x=Math.min(zero,scale(r.change)),w=Math.abs(scale(r.change)-zero);svg.append(el('text',{x:m.l-8,y:y+15,'text-anchor':'end',fill:'#17212b','font-size':11},r.name.length>26?r.name.slice(0,25)+'…':r.name));const b=el('rect',{x,y,width:Math.max(w,1),height:h,rx:3,fill:r.change>=0?'#008c7a':'#d84848',class:'bar','aria-label':`${r.name} ${r.change>=0?'+':''}${fmt(r.change)}개`});b.addEventListener('mousemove',e=>showTip(e,`<b>${r.name}</b><br>${r.change>=0?'+':''}${fmt(r.change)}개 · ${pct(r.growth_pct)}`));b.addEventListener('mouseleave',hideTip);svg.append(b);svg.append(el('text',{x:r.change>=0?scale(r.change)+6:scale(r.change)-6,y:y+15,'text-anchor':r.change>=0?'start':'end',fill:'#17212b','font-size':11},`${r.change>=0?'+':''}${fmt(r.change)}`))});svg.append(el('line',{x1:zero,x2:zero,y1:8,y2:H-m.b,class:'axis'}));resultRows.innerHTML=rows.map(r=>`<tr><td>${r.name}</td><td>${fmt(r.start)}</td><td>${fmt(r.end)}</td><td class="${r.change>=0?'positive':'negative'}">${r.change>=0?'+':''}${fmt(r.change)}</td><td class="${r.growth_pct>=0?'positive':'negative'}">${pct(r.growth_pct)}</td></tr>`).join('')}
 function initMap(){
   if(!window.L){document.getElementById('map').textContent='배경 지도를 불러오려면 인터넷 연결이 필요합니다.';return}
   const map=L.map('map').setView([36.35,127.38],11),dongLayer=L.layerGroup().addTo(map),boundaryLayer=L.layerGroup().addTo(map),layer=L.layerGroup().addTo(map),densityChecks=[...document.querySelectorAll('input[name="density"]')];
@@ -103,14 +234,15 @@ function initMap(){
     dongLegend.hidden=false;dongLegend.innerHTML=`<strong>${metricNames[metric]}</strong><span>${format(values[0])}</span>${palette.map(c=>`<i style="background:${c}"></i>`).join('')}<span>${format(values.at(-1))}</span>`;
   }
   function draw(){layer.clearLayers();const index=+mapPeriod.value,period=data.mapPeriods[index],label=periodLabel(period),points=grouped(period).sort((x,y)=>x.count-y.count),total=points.reduce((s,p)=>s+p.count,0),active=new Set(densityChecks.filter(x=>x.checked).map(x=>x.value));mapPeriodLabel.textContent=label;ticks.forEach((t,i)=>t.classList.toggle('on',i===index));mapTitle.textContent=`${label} 상가 위치 분포 (${fmt(total)}개)`;mapEl.setAttribute('aria-label',`${label} 대전 상가 위치 분포 지도`);points.forEach(p=>{const strength=p.count/scaleMax,band=strength>.35?'high':strength>.12?'medium':'low';if(!active.has(band))return;const color=band==='high'?'#dc2626':band==='medium'?'#7c3aed':'#2563eb',marker=L.circleMarker([p.lat,p.lon],{renderer:markerRenderer,radius:6+20*Math.sqrt(strength),stroke:false,fillColor:color,fillOpacity:.55}).bindTooltip(`<b>${fmt(p.count)}개</b><br>${label} · 격자 ${p.key}`);marker.on('mouseover',()=>marker.setStyle({fillOpacity:.9})).on('mouseout',()=>marker.setStyle({fillOpacity:.55}));marker.addTo(layer)})}
-  mapDistrict.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw()});
+  mapDistrict.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw();drawDongScatter()});
   mapCategory.addEventListener('change',()=>{rescale();draw()});
-  mapPeriod.addEventListener('input',()=>{drawDong();draw()});
+  mapPeriod.addEventListener('input',()=>{drawDong();draw();drawDongScatter()});
   dongMetric.addEventListener('change',drawDong);
   densityChecks.forEach(x=>x.addEventListener('change',draw));
-  drawBoundary();drawDong();rescale();draw();
+  drawBoundary();drawDong();rescale();draw();drawDongScatter();
 }
-seriesType.addEventListener('change',populateSeries);seriesName.addEventListener('change',drawLine);barType.addEventListener('change',drawBars);populateSeries();drawBars();initMap();
+seriesType.addEventListener('change',populateSeries);barType.addEventListener('change',drawBars);periodStart.addEventListener('change',updatePeriod);periodEnd.addEventListener('change',updatePeriod);
+populatePeriods();updatePeriod();populateSeries();initMap();
 </script>
 </body>
 </html>
