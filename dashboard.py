@@ -17,6 +17,7 @@ OUT = ROOT / "data" / "processed"
 BOUNDARIES = OUT / "daejeon_district_boundaries.geojson"
 DONG_BOUNDARIES = OUT / "daejeon_dong_boundaries.geojson"
 DONG_INDICATORS = OUT / "dong_indicators_timeseries.csv"
+DONG_PANEL = OUT / "dong_panel.csv"
 START, END = "2025-03-01", "2026-03-01"
 QUARTER_MONTHS = {"03", "06", "09", "12"}
 DAEJEON_BBOX = ((36.1, 36.6), (127.2, 127.7))  # 좌표계 오류 회차를 가려내기 위한 대전 외곽 범위
@@ -32,6 +33,15 @@ def aggregate(rows: list[dict], key: str) -> dict[str, dict[str, int]]:
     for row in rows:
         result[row[key]][row["period"]] += int(float(row["store_count"]))
     return {name: dict(values) for name, values in result.items()}
+
+
+def read_dong_panel() -> list[dict]:
+    """행정동 × 업종 × 시점 패널(commercial_analysis.py 산출물)을 대시보드 비교 단위로 쓴다."""
+    with DONG_PANEL.open(encoding="utf-8-sig", newline="") as f:
+        rows = list(csv.DictReader(f))
+    for row in rows:
+        row["name"] = f'{row["district"]} {row["dong"]}'
+    return rows
 
 
 def growth(series: dict[str, dict[str, int]]) -> list[dict]:
@@ -197,6 +207,13 @@ def main() -> None:
         combinations[f'{row["district"]}|{row["category"]}'][row["period"]] = int(float(row["store_count"]))
     assert len(combinations) == len(full_districts) * len(full_categories)
 
+    dong_rows = read_dong_panel()
+    full_dongs = aggregate(dong_rows, "name")
+    assert len(full_dongs) == 82
+    assert {r["period"] for r in dong_rows} == set(full_periods)
+    assert all(sum(v.get(p, 0) for v in full_dongs.values()) == full_city[p] for p in full_periods)
+    dong_district = {name: name.split(" ", 1)[0] for name in full_dongs}
+
     map_points = spatial_grids()
     assert END in map_points
     for period, points in map_points.items():
@@ -211,6 +228,7 @@ def main() -> None:
     assert set(metrics) == set(map_points)
     payload = {"periods": full_periods, "city": full_city, "districts": full_districts,
                "categories": full_categories, "combinations": combinations,
+               "dongs": full_dongs, "dongDistrict": dong_district,
                "reliableStart": START, "reliableEnd": END,
                "mapPeriods": sorted(map_points),
                "mapPoints": map_points, "boundaries": boundaries,
