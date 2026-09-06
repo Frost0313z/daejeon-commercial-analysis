@@ -77,17 +77,19 @@ def issued(store_id: str) -> str | None:
     return m.group(1) if m else None
 
 
-def load_daejeon() -> tuple[dict, dict, dict, dict]:
-    ids, cats, cohorts, first_seen = {}, {}, {}, {}
+def load_daejeon() -> tuple[dict, dict, dict, dict, dict]:
+    ids, cats, eligible, first_seen = {}, {}, {}, {}
     for stamp in STAMPS:
         records = read_stores(DAEJEON, stamp)
         ids[stamp] = {sid for sid, _ in records}
         cats[stamp] = Counter(cat for _, cat in records)
-        cohorts[stamp] = {sid for sid, _ in records
-                          if (ym := issued(sid)) and ym <= COHORT_CUT}
+        eligible[stamp] = {sid for sid, _ in records
+                           if (ym := issued(sid)) and ym <= COHORT_CUT}
         for sid, _ in records:
             first_seen.setdefault(sid, stamp)
-    return ids, cats, cohorts, first_seen
+    baseline = ids[STAMPS[0]]
+    cohorts = {stamp: current & baseline for stamp, current in ids.items()}
+    return ids, cats, cohorts, eligible, first_seen
 
 
 def cohort_survival(ids: dict, cohorts: dict) -> list[dict]:
@@ -133,12 +135,12 @@ def registration_lag(first_seen: dict) -> tuple[list[dict], list[int]]:
     return rows, everything
 
 
-def population_stability(ids: dict, cats: dict, cohorts: dict) -> list[dict]:
+def population_stability(ids: dict, cats: dict, eligible: dict) -> list[dict]:
     rows = []
     for before, after in zip(STAMPS, STAMPS[1:]):
         appeared = len(ids[after] - ids[before])
         disappeared = len(ids[before] - ids[after])
-        cohort_change = len(cohorts[after]) - len(cohorts[before])
+        cohort_change = len(eligible[after]) - len(eligible[before])
         total_before, total_after = sum(cats[before].values()), sum(cats[after].values())
         shifts = {c: cats[after][c] / total_after * 100 - cats[before][c] / total_before * 100
                   for c in cats[after]}
@@ -200,11 +202,11 @@ def draw_cohort(rows: list[dict]) -> None:
     ax.plot(x, total, color=BLUE, linewidth=2, marker="o", markersize=6,
             markeredgecolor="white", markeredgewidth=1.5, label="수록 총수")
     ax.plot(x, cohort, color=TEAL, linewidth=2, marker="s", markersize=6,
-            markeredgecolor="white", markeredgewidth=1.5, label="고정 코호트(2024-06 이전 발급)")
+            markeredgecolor="white", markeredgewidth=1.5, label="고정 코호트(2024-03 수록 업소)")
 
     ax.annotate(f"{total[3]:,}", (3, total[3]), textcoords="offset points",
                 xytext=(0, 12), ha="center", fontsize=9, color=INK)
-    ax.annotate("2024-09까지는 두 값이 같다\n(편입 전이라 코호트 = 수록 총수)",
+    ax.annotate("기준 회차 수록 업소만 고정해 추적\n(이후 신규·지연 편입은 추가하지 않음)",
                 (1, cohort[1]), textcoords="offset points", xytext=(8, -46),
                 ha="left", fontsize=8.5, color=MUTED, linespacing=1.4,
                 arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=.9,
@@ -271,7 +273,7 @@ def draw_lag(lags: list[int], rows: list[dict]) -> None:
 
 
 def main() -> None:
-    ids, cats, cohorts, first_seen = load_daejeon()
+    ids, cats, cohorts, eligible, first_seen = load_daejeon()
 
     survival = cohort_survival(ids, cohorts)
     write_csv("cohort_survival.csv", survival)
@@ -279,7 +281,7 @@ def main() -> None:
     lag_rows, lags = registration_lag(first_seen)
     write_csv("registration_lag.csv", lag_rows)
 
-    stability = population_stability(ids, cats, cohorts)
+    stability = population_stability(ids, cats, eligible)
     write_csv("population_stability.csv", stability)
 
     cross = region_cross_check()

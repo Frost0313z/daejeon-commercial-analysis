@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "data" / "processed" / "daejeon_timeseries.csv"
 OUT = ROOT / "data" / "processed"
 BOUNDARIES = OUT / "daejeon_district_boundaries.geojson"
+DONG_BOUNDARIES = OUT / "daejeon_dong_boundaries.geojson"
+DONG_INDICATORS = OUT / "dong_indicators_timeseries.csv"
 START, END = "2025-03-01", "2026-03-01"
 QUARTER_MONTHS = {"03", "06", "09", "12"}
 DAEJEON_BBOX = ((36.1, 36.6), (127.2, 127.7))  # 좌표계 오류 회차를 가려내기 위한 대전 외곽 범위
@@ -131,6 +133,21 @@ def spatial_grids() -> dict[str, list[dict]]:
     return grids
 
 
+def dong_metrics() -> dict[str, list[dict]]:
+    """지도에 필요한 행정동 지표만 숫자로 변환해 시점별로 묶는다."""
+    grouped: dict[str, list[dict]] = defaultdict(list)
+    with DONG_INDICATORS.open(encoding="utf-8-sig", newline="") as f:
+        for row in csv.DictReader(f):
+            grouped[row["period"]].append({
+                "dong_code": row["dong_code"], "district": row["district"],
+                "dong": row["dong"],
+                "density": float(row["supply_density_per_1000"]),
+                "hhi": float(row["hhi"]),
+                "survival": float(row["survival_pct"]),
+            })
+    return dict(grouped)
+
+
 def main() -> None:
     panel = read_panel()
     totals: dict[str, int] = defaultdict(int)
@@ -156,10 +173,17 @@ def main() -> None:
         assert sum(r["count"] for r in points) == totals[period], period
     boundaries = json.loads(BOUNDARIES.read_text(encoding="utf-8-sig"))
     assert {f["properties"]["district"] for f in boundaries["features"]} == set(districts)
+    dong_boundaries = json.loads(DONG_BOUNDARIES.read_text(encoding="utf-8-sig"))
+    metrics = dong_metrics()
+    dong_codes = {f["properties"]["dong_code"] for f in dong_boundaries["features"]}
+    assert len(dong_codes) == 82
+    assert all({r["dong_code"] for r in rows} == dong_codes for rows in metrics.values())
+    assert set(metrics) == set(map_points)
     payload = {"periods": periods, "city": city, "districts": districts,
                "categories": categories, "districtGrowth": district_growth,
                "categoryGrowth": category_growth, "mapPeriods": sorted(map_points),
-               "mapPoints": map_points, "boundaries": boundaries}
+               "mapPoints": map_points, "boundaries": boundaries,
+               "dongBoundaries": dong_boundaries, "dongMetrics": metrics}
     template = (ROOT / "dashboard-template.html").read_text(encoding="utf-8")
     html = template.replace("__DASHBOARD_DATA__", json.dumps(payload, ensure_ascii=False))
     (ROOT / "interactive-dashboard.html").write_text(html, encoding="utf-8")
