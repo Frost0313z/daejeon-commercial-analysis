@@ -20,13 +20,13 @@
 | 원본 규모 | CSV 10개, 관측 행 763,839개, 고유 업소번호 114,542개 |
 | 시계열 패널 | 5개 구 × 대분류 10개 × 관측월 10개 = 500행 |
 | 핵심 비교 기간 | 2025-03 ~ 2026-03 |
-| 시각화 | 위치 지도 포함 인터랙티브 HTML 1개, 추세·지역·업종·업소 이동 PNG 5개 |
+| 시각화 | 위치 지도 포함 인터랙티브 HTML 1개, 추세·지역·업종·업소 이동·수집 진단 PNG 8개 |
 
 ## 한눈에 보는 결론
 
 1. **신뢰 구간의 대전 전체 상가 수는 2025년 3월 77,904개에서 2026년 3월 78,607개로 703개(+0.90%) 증가했습니다.**
 2. **증가율은 유성구(+1.30%), 절대 증가량은 서구(+299개)가 가장 높았습니다.** 업종별로는 수리 및 개인 서비스업이 +427개로 가장 많이 늘었고, 부동산업은 +9.82%로 증가율이 가장 높았습니다. 음식점업은 506개(-2.14%) 감소했습니다.
-3. **2024년 9월에서 12월 사이에는 11,722개(+17.02%)가 급증했습니다.** 이때 신규 등장한 업소번호는 17,113개, 사라진 업소번호는 5,391개였습니다.
+3. **2024년 9월에서 12월 사이에는 11,722개(+17.02%)가 급증했습니다.** 이때 신규 등장한 업소번호는 17,113개, 사라진 업소번호는 5,391개였습니다. 경기도 같은 회차도 +21.32%로 같은 패턴을 보여, 상권 변화가 아니라 전국 단위 수집 체계 변경으로 판단했습니다.
 
 ## 대표 시각화
 
@@ -44,7 +44,7 @@
 
 ![업종별 증감](images/03_category_growth.png)
 
-기간과 항목을 바꿔 보려면 [인터랙티브 대시보드](interactive-dashboard.html)를 내려받아 브라우저에서 여세요. 2026년 3월 위치 지도에서는 자치구·업종을 선택하고 파랑·보라·빨강 밀도 체크박스를 켜고 끌 수 있습니다. 자치구를 선택하면 행정구역 경계가 강조되고 해당 영역으로 자동 확대됩니다. 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
+기간과 항목을 바꿔 보려면 [인터랙티브 대시보드](interactive-dashboard.html)를 내려받아 브라우저에서 여세요. 위치 지도에서는 슬라이더로 2024년 3월부터 2026년 6월까지 관측 시점을 바꿔 보고, 자치구·업종을 선택하고 파랑·보라·빨강 밀도 체크박스를 켜고 끌 수 있습니다. 자치구를 선택하면 행정구역 경계가 강조되고 해당 영역으로 자동 확대됩니다. 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
 
 ## 무엇을 질문했나
 
@@ -120,6 +120,9 @@ python -m venv .venv
 
 # 인터랙티브 HTML 재생성
 .\.venv\Scripts\python.exe dashboard.py
+
+# 수집 체계 변경 진단(그림 7·8과 진단 CSV)
+.\.venv\Scripts\python.exe quality_diagnostics.py
 ```
 
 노트북은 가공 데이터와 정적 그래프를, `dashboard.py`는 신뢰 구간 요약 CSV와 `interactive-dashboard.html`을 갱신합니다.
@@ -134,6 +137,7 @@ python -m venv .venv
 | [analysis.ipynb](analysis.ipynb) | 전체 분석 코드와 실행 결과 |
 | [interactive-dashboard.html](interactive-dashboard.html) | 브라우저에서 바로 여는 인터랙티브 시각화 |
 | [dashboard.py](dashboard.py) | 대시보드와 신뢰 구간 요약 CSV 생성 |
+| [quality_diagnostics.py](quality_diagnostics.py) | 수집 체계 변경 진단(고정 코호트·등재 지연·지역 교차 검증) |
 | [requirements.txt](requirements.txt) | 재현용 Python 의존성 |
 
 ### 주요 가공 데이터
@@ -144,9 +148,13 @@ python -m venv .venv
 | [reliable_period_summary.csv](data/processed/reliable_period_summary.csv) | 2025-03~2026-03 전체 증감 요약 |
 | [reliable_period_district_growth.csv](data/processed/reliable_period_district_growth.csv) | 신뢰 구간 자치구별 증감 |
 | [reliable_period_category_growth.csv](data/processed/reliable_period_category_growth.csv) | 신뢰 구간 업종별 증감 |
-| [store_location_grid_202603.csv](data/processed/store_location_grid_202603.csv) | 2026년 3월 좌표를 0.01도 격자로 집계한 지도 데이터 |
+| [store_location_grid_YYYYMM.csv](data/processed/store_location_grid_202603.csv) | 관측 시점(2024-03~2026-06)별 좌표를 0.01도 격자로 집계한 지도 데이터. lat·lon은 격자 중심이 아니라 격자에 속한 상가들의 무게중심 |
 | [daejeon_district_boundaries.geojson](data/processed/daejeon_district_boundaries.geojson) | 대전 5개 자치구 경계(OpenStreetMap/Nominatim, ODbL) |
 | [category_change_decomposition.csv](data/processed/category_change_decomposition.csv) | 업소 등장·이탈·유지·업종 이동 분해 |
+| [cohort_survival.csv](data/processed/cohort_survival.csv) | 고정 코호트 잔존율. 수록 기준 변경에 영향받지 않는 시계열 |
+| [registration_lag.csv](data/processed/registration_lag.csv) | 업소번호 발급 → 최초 수록까지의 지연 분포 |
+| [population_stability.csv](data/processed/population_stability.csv) | 회차 전이별 모집단 안정성 진단 |
+| [region_cross_check.csv](data/processed/region_cross_check.csv) | 2024년 말 급증의 대전·경기 교차 검증 |
 
 <details>
 <summary><strong>전체 processed 데이터 설명 보기</strong></summary>
@@ -171,6 +179,7 @@ daejeon-commercial-analysis/
 ├─ images/                     # 리포트 시각화 5개
 ├─ analysis.ipynb              # 메인 분석
 ├─ dashboard.py                # 인터랙티브 HTML 생성
+├─ quality_diagnostics.py      # 수집 체계 변경 진단
 ├─ interactive-dashboard.html  # 브라우저에서 바로 실행
 ├─ REPORT.md                   # 최종 분석 리포트
 ├─ README.md
@@ -181,7 +190,8 @@ daejeon-commercial-analysis/
 
 - 원본 10개 파일의 행 수·해시·관측월 감사
 - 집계 합계, 증감률, 결측과 분모 0 처리 검증
-- 리포트·PNG 5개·인터랙티브 HTML을 신뢰 구간 계산 결과에 맞춰 갱신
+- 리포트·PNG 8개·인터랙티브 HTML을 신뢰 구간 계산 결과에 맞춰 갱신
+- 2024년 말 급증을 경기도 같은 회차와 교차 검증(대전 +17.02% / 경기 +21.32%)
 
 ## 분석의 한계
 
