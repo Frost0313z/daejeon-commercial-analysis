@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>대전 상권 변화 대시보드</title>
+  <style>
+    :root{--bg:#f4f6f8;--surface:#fff;--text:#17212b;--muted:#687582;--line:#d9e0e7;--blue:#1769e0;--teal:#008c7a;--red:#d84848;--soft:#eaf2ff}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}main{max-width:1180px;margin:auto;padding:32px 22px 56px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}h2{font-size:20px;margin:0 0 16px}p{line-height:1.65}.sub{color:var(--muted);margin:0}.notice{margin-top:16px;padding:12px 14px;border-left:4px solid var(--blue);background:var(--soft);font-size:14px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.card,.panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px}.card{padding:18px}.label{font-size:13px;color:var(--muted)}.value{font-size:28px;font-weight:700;margin-top:6px}.positive{color:var(--teal)}.negative{color:var(--red)}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}.panel{padding:20px;margin-bottom:16px}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-size:13px;color:var(--muted);display:grid;gap:6px}select{min-width:190px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}svg{display:block;width:100%;height:auto}.axis{stroke:#aab4bf;stroke-width:1}.grid{stroke:#e4e9ee;stroke-width:1}.chart-line{fill:none;stroke:var(--blue);stroke-width:3}.chart-point{fill:var(--surface);stroke:var(--blue);stroke-width:3;cursor:pointer}.bar{cursor:pointer}.tooltip{position:fixed;pointer-events:none;opacity:0;background:#17212b;color:#fff;padding:8px 10px;border-radius:7px;font-size:12px;line-height:1.5;z-index:5;transition:opacity .1s}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.foot{font-size:13px;color:var(--muted);margin-top:14px}@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:460px){main{padding:22px 14px}.stats{grid-template-columns:1fr}.value{font-size:22px}.panel{padding:14px}select{min-width:0;width:100%}.controls label{width:100%}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>대전 상권 변화 대시보드</h1>
+    <p class="sub">신뢰도 우선 분석 구간 · 2025년 3월 → 2026년 3월</p>
+    <div class="notice">2024년 말의 전국적 데이터 단절과 2026년 6월의 큰 업소번호 교체 구간을 주요 성장률 계산에서 제외했습니다.</div>
+  </header>
+  <section class="stats" aria-label="핵심 지표">
+    <div class="card"><div class="label">시작 상가 수</div><div class="value" id="startValue"></div></div>
+    <div class="card"><div class="label">종료 상가 수</div><div class="value" id="endValue"></div></div>
+    <div class="card"><div class="label">순증</div><div class="value positive" id="changeValue"></div></div>
+    <div class="card"><div class="label">증가율</div><div class="value positive" id="growthValue"></div></div>
+  </section>
+  <div class="layout">
+    <section class="panel">
+      <h2>관측 시점별 상가 수</h2>
+      <div class="controls">
+        <label>비교 단위<select id="seriesType"><option value="city">대전 전체</option><option value="district">자치구</option><option value="category">업종</option></select></label>
+        <label id="seriesLabel" hidden>항목<select id="seriesName"></select></label>
+      </div>
+      <svg id="lineChart" viewBox="0 0 720 360" role="img" aria-label="관측 시점별 상가 수 선 그래프"></svg>
+      <p class="foot">2025년 9월 자료가 없어 6월과 12월 사이는 6개월 간격입니다. 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
+    </section>
+    <section class="panel">
+      <h2 id="barTitle">자치구별 증감</h2>
+      <div class="controls"><label>비교<select id="barType"><option value="district">자치구</option><option value="category">업종</option></select></label></div>
+      <svg id="barChart" viewBox="0 0 520 410" role="img" aria-label="항목별 증감 막대 그래프"></svg>
+    </section>
+  </div>
+  <section class="panel">
+    <h2 id="tableTitle">자치구별 상세 결과</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>항목</th><th>2025-03</th><th>2026-03</th><th>증감</th><th>증감률</th></tr></thead><tbody id="resultRows"></tbody></table></div>
+    <p class="foot">상가 수는 공공데이터 파일에 수록된 업소 수입니다. 매출·고용·실제 개폐업 건수를 의미하지 않습니다.</p>
+  </section>
+</main>
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+<script>
+const data=__DASHBOARD_DATA__,fmt=n=>n.toLocaleString('ko-KR'),pct=n=>`${n>=0?'+':''}${n.toFixed(2)}%`;
+const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesName=document.getElementById('seriesName'),seriesLabel=document.getElementById('seriesLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows');
+const cityStart=data.city['2025-03-01'],cityEnd=data.city['2026-03-01'];
+startValue.textContent=fmt(cityStart);endValue.textContent=fmt(cityEnd);changeValue.textContent=`+${fmt(cityEnd-cityStart)}`;growthValue.textContent=pct((cityEnd/cityStart-1)*100);
+const NS='http://www.w3.org/2000/svg',tip=document.getElementById('tooltip');
+function el(name,attrs={},text=''){const n=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));n.textContent=text;return n}
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;tip.style.left=`${e.clientX+12}px`;tip.style.top=`${e.clientY+12}px`}function hideTip(){tip.style.opacity=0}
+function currentSeries(){const type=seriesType.value;if(type==='city')return ['대전 전체',data.city];const source=type==='district'?data.districts:data.categories;return [seriesName.value,source[seriesName.value]]}
+function populateSeries(){const type=seriesType.value,show=type!=='city';seriesLabel.hidden=!show;if(show){const source=type==='district'?data.districts:data.categories;seriesName.innerHTML=Object.keys(source).sort().map(n=>`<option>${n}</option>`).join('')}drawLine()}
+function drawLine(){const svg=lineChart;svg.innerHTML='';const [name,series]=currentSeries(),values=data.periods.map(p=>series[p]),W=720,H=360,m={l:76,r:22,t:24,b:54};let lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*.2,20);lo-=pad;hi+=pad;const x=i=>m.l+i*(W-m.l-m.r)/(values.length-1),y=v=>m.t+(hi-v)*(H-m.t-m.b)/(hi-lo);for(let i=0;i<5;i++){let v=lo+(hi-lo)*i/4,Y=y(v);svg.append(el('line',{x1:m.l,x2:W-m.r,y1:Y,y2:Y,class:'grid'}));svg.append(el('text',{x:m.l-10,y:Y+4,'text-anchor':'end',fill:'#687582','font-size':12},fmt(Math.round(v))))}svg.append(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'axis'}));svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));const path=values.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}`).join(' ');svg.append(el('path',{d:path,class:'chart-line'}));data.periods.forEach((p,i)=>{const label=p.slice(0,7);svg.append(el('text',{x:x(i),y:H-24,'text-anchor':'middle',fill:'#687582','font-size':12},label));const c=el('circle',{cx:x(i),cy:y(values[i]),r:6,class:'chart-point','aria-label':`${name} ${label} ${fmt(values[i])}개`});c.addEventListener('mousemove',e=>showTip(e,`<b>${name}</b><br>${label} · ${fmt(values[i])}개`));c.addEventListener('mouseleave',hideTip);svg.append(c)})}
+function drawBars(){const rows=barType.value==='district'?data.districtGrowth:data.categoryGrowth,svg=barChart;svg.innerHTML='';barTitle.textContent=`${barType.value==='district'?'자치구':'업종'}별 증감`;tableTitle.textContent=`${barType.value==='district'?'자치구':'업종'}별 상세 결과`;const W=520,H=410,m={l:210,r:54,t:16,b:30},max=Math.max(...rows.map(r=>Math.abs(r.change))),zero=m.l+(W-m.l-m.r)/2,scale=v=>zero+v/max*(W-m.l-m.r)/2;rows.forEach((r,i)=>{const y=20+i*35,h=20;let x=Math.min(zero,scale(r.change)),w=Math.abs(scale(r.change)-zero);svg.append(el('text',{x:m.l-8,y:y+15,'text-anchor':'end',fill:'#17212b','font-size':11},r.name.length>26?r.name.slice(0,25)+'…':r.name));const b=el('rect',{x,y,width:Math.max(w,1),height:h,rx:3,fill:r.change>=0?'#008c7a':'#d84848',class:'bar','aria-label':`${r.name} ${r.change>=0?'+':''}${fmt(r.change)}개`});b.addEventListener('mousemove',e=>showTip(e,`<b>${r.name}</b><br>${r.change>=0?'+':''}${fmt(r.change)}개 · ${pct(r.growth_pct)}`));b.addEventListener('mouseleave',hideTip);svg.append(b);svg.append(el('text',{x:r.change>=0?scale(r.change)+6:scale(r.change)-6,y:y+15,'text-anchor':r.change>=0?'start':'end',fill:'#17212b','font-size':11},`${r.change>=0?'+':''}${fmt(r.change)}`))});svg.append(el('line',{x1:zero,x2:zero,y1:8,y2:H-m.b,class:'axis'}));resultRows.innerHTML=rows.map(r=>`<tr><td>${r.name}</td><td>${fmt(r.start)}</td><td>${fmt(r.end)}</td><td class="${r.change>=0?'positive':'negative'}">${r.change>=0?'+':''}${fmt(r.change)}</td><td class="${r.growth_pct>=0?'positive':'negative'}">${pct(r.growth_pct)}</td></tr>`).join('')}
+seriesType.addEventListener('change',populateSeries);seriesName.addEventListener('change',drawLine);barType.addEventListener('change',drawBars);populateSeries();drawBars();
+</script>
+</body>
+</html>

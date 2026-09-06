@@ -7,7 +7,7 @@
 [![Data](https://img.shields.io/badge/Data-Public_Data-0B5FFF)](https://www.data.go.kr/data/15083033/fileData.do)
 [![Status](https://img.shields.io/badge/Analysis-Verified-1F883D)](REPORT.md)
 
-**바로가기:** [📘 전체 분석 리포트](REPORT.md) · [📓 실행 가능한 노트북](analysis.ipynb) · [📊 핵심 시계열 데이터](data/processed/daejeon_timeseries.csv) · [🔎 원본 파일 감사표](data/processed/file_audit.csv)
+**바로가기:** [📈 인터랙티브 대시보드](interactive-dashboard.html) · [📘 전체 분석 리포트](REPORT.md) · [📓 실행 가능한 노트북](analysis.ipynb) · [📊 핵심 시계열 데이터](data/processed/daejeon_timeseries.csv)
 
 ---
 
@@ -19,13 +19,13 @@
 | 분석 기간 | 2024-03 ~ 2026-06 |
 | 원본 규모 | CSV 10개, 관측 행 763,839개, 고유 업소번호 114,542개 |
 | 시계열 패널 | 5개 구 × 대분류 10개 × 관측월 10개 = 500행 |
-| 핵심 비교 기간 | 2025-03 ~ 2026-06 |
-| 시각화 | 추세·지역·업종·증감률·업소 이동 등 PNG 5개 |
+| 핵심 비교 기간 | 2025-03 ~ 2026-03 |
+| 시각화 | 인터랙티브 HTML 1개, 추세·지역·업종·업소 이동 PNG 5개 |
 
 ## 한눈에 보는 결론
 
-1. **대전 전체 상가 수는 2025년 3월 77,904개에서 2026년 6월 80,704개로 2,800개(+3.59%) 증가했습니다.**
-2. **서구가 +1,167개(+4.39%)로 절대 증가량과 증가율 모두 가장 높았습니다.** 업종별로는 수리 및 개인 서비스업이 +725개로 가장 많이 늘었고, 숙박업은 +25.03%로 증가율이 가장 높았습니다.
+1. **신뢰 구간의 대전 전체 상가 수는 2025년 3월 77,904개에서 2026년 3월 78,607개로 703개(+0.90%) 증가했습니다.**
+2. **증가율은 유성구(+1.30%), 절대 증가량은 서구(+299개)가 가장 높았습니다.** 업종별로는 수리 및 개인 서비스업이 +427개로 가장 많이 늘었고, 부동산업은 +9.82%로 증가율이 가장 높았습니다. 음식점업은 506개(-2.14%) 감소했습니다.
 3. **2024년 9월에서 12월 사이에는 11,722개(+17.02%)가 급증했습니다.** 이때 신규 등장한 업소번호는 17,113개, 사라진 업소번호는 5,391개였습니다.
 
 ## 대표 시각화
@@ -44,11 +44,11 @@
 
 ![업종별 증감](images/03_category_growth.png)
 
-나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
+기간과 항목을 바꿔 보려면 [인터랙티브 대시보드](interactive-dashboard.html)를 내려받아 브라우저에서 여세요. 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
 
 ## 무엇을 질문했나
 
-1. 2025년 3월부터 2026년 6월까지 대전 전체 상가 수는 어떻게 변했는가?
+1. 2025년 3월부터 2026년 3월까지 대전 전체 상가 수는 어떻게 변했는가?
 2. 어느 자치구와 업종이 전체 증가를 주도했는가?
 3. 어느 업종의 증가량과 증가율이 가장 높았는가?
 4. 2024년 말 급증과 업소번호 교체는 어떻게 해석해야 하는가?
@@ -78,11 +78,12 @@
 
 ## 빠르게 결과 확인하기
 
-코드를 실행하지 않아도 다음 세 파일만 보면 분석 전체를 파악할 수 있습니다.
+코드를 실행하지 않아도 다음 네 파일만 보면 분석 전체를 파악할 수 있습니다.
 
-1. [REPORT.md](REPORT.md) — 질문, 전처리, 그래프, 관찰과 해석, 한계, AI 사용 로그
-2. [analysis.ipynb](analysis.ipynb) — 전처리부터 검증까지 실행 결과가 저장된 노트북
-3. [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) — 구 × 대분류 × 관측월 기준 핵심 패널
+1. [interactive-dashboard.html](interactive-dashboard.html) — 기간 내 전체·자치구·업종 추이를 바꿔 보는 단일 HTML
+2. [REPORT.md](REPORT.md) — 질문, 전처리, 그래프, 관찰과 해석, 한계, AI 사용 로그
+3. [analysis.ipynb](analysis.ipynb) — 전처리부터 검증까지 실행 결과가 저장된 노트북
+4. [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) — 구 × 대분류 × 관측월 기준 핵심 패널
 
 ## 직접 재현하기
 
@@ -117,9 +118,11 @@ python -m venv .venv
 # 전체 자동 재실행
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=600 analysis.ipynb
 
+# 인터랙티브 HTML 재생성
+.\.venv\Scripts\python.exe dashboard.py
 ```
 
-노트북을 실행하면 `data/processed/`, `images/`, `REPORT.md`가 실제 계산 결과로 갱신됩니다.
+노트북은 가공 데이터와 정적 그래프를, `dashboard.py`는 신뢰 구간 요약 CSV와 `interactive-dashboard.html`을 갱신합니다.
 
 ## 결과물 안내
 
@@ -129,6 +132,8 @@ python -m venv .venv
 | --- | --- |
 | [REPORT.md](REPORT.md) | 제출용 분석 리포트 |
 | [analysis.ipynb](analysis.ipynb) | 전체 분석 코드와 실행 결과 |
+| [interactive-dashboard.html](interactive-dashboard.html) | 브라우저에서 바로 여는 인터랙티브 시각화 |
+| [dashboard.py](dashboard.py) | 대시보드와 신뢰 구간 요약 CSV 생성 |
 | [requirements.txt](requirements.txt) | 재현용 Python 의존성 |
 
 ### 주요 가공 데이터
@@ -136,6 +141,9 @@ python -m venv .venv
 | 파일 | 내용 |
 | --- | --- |
 | [daejeon_timeseries.csv](data/processed/daejeon_timeseries.csv) | 구 × 대분류 × 관측월 500행 패널 |
+| [reliable_period_summary.csv](data/processed/reliable_period_summary.csv) | 2025-03~2026-03 전체 증감 요약 |
+| [reliable_period_district_growth.csv](data/processed/reliable_period_district_growth.csv) | 신뢰 구간 자치구별 증감 |
+| [reliable_period_category_growth.csv](data/processed/reliable_period_category_growth.csv) | 신뢰 구간 업종별 증감 |
 | [category_change_decomposition.csv](data/processed/category_change_decomposition.csv) | 업소 등장·이탈·유지·업종 이동 분해 |
 
 <details>
@@ -160,6 +168,8 @@ daejeon-commercial-analysis/
 │  └─ processed/               # 집계·품질 점검 결과
 ├─ images/                     # 리포트 시각화 5개
 ├─ analysis.ipynb              # 메인 분석
+├─ dashboard.py                # 인터랙티브 HTML 생성
+├─ interactive-dashboard.html  # 브라우저에서 바로 실행
 ├─ REPORT.md                   # 최종 분석 리포트
 ├─ README.md
 └─ requirements.txt
@@ -169,7 +179,7 @@ daejeon-commercial-analysis/
 
 - 원본 10개 파일의 행 수·해시·관측월 감사
 - 집계 합계, 증감률, 결측과 분모 0 처리 검증
-- 리포트 내 수치와 PNG 5개를 재계산 결과에 맞춰 갱신
+- 리포트·PNG 5개·인터랙티브 HTML을 신뢰 구간 계산 결과에 맞춰 갱신
 
 ## 분석의 한계
 
