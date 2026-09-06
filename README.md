@@ -20,7 +20,7 @@
 | 원본 규모 | CSV 10개, 관측 행 763,839개, 고유 업소번호 114,542개 |
 | 시계열 패널 | 5개 구 × 대분류 10개 × 관측월 10개 = 500행 |
 | 핵심 비교 기간 | 2025-03 ~ 2026-03 |
-| 시각화 | 인터랙티브 HTML 1개, 추세·지역·업종·업소 이동 PNG 5개 |
+| 시각화 | 위치 지도 포함 인터랙티브 HTML 1개, 추세·지역·업종·업소 이동 PNG 5개 |
 
 ## 한눈에 보는 결론
 
@@ -44,7 +44,7 @@
 
 ![업종별 증감](images/03_category_growth.png)
 
-기간과 항목을 바꿔 보려면 [인터랙티브 대시보드](interactive-dashboard.html)를 내려받아 브라우저에서 여세요. 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
+기간과 항목을 바꿔 보려면 [인터랙티브 대시보드](interactive-dashboard.html)를 내려받아 브라우저에서 여세요. 2026년 3월 위치 지도에서는 자치구와 업종을 선택해 약 1km 격자별 상가 분포를 확인할 수 있습니다. 나머지 시각화와 수치별 해석은 [REPORT.md](REPORT.md)에서 확인할 수 있습니다.
 
 ## 무엇을 질문했나
 
@@ -144,6 +144,7 @@ python -m venv .venv
 | [reliable_period_summary.csv](data/processed/reliable_period_summary.csv) | 2025-03~2026-03 전체 증감 요약 |
 | [reliable_period_district_growth.csv](data/processed/reliable_period_district_growth.csv) | 신뢰 구간 자치구별 증감 |
 | [reliable_period_category_growth.csv](data/processed/reliable_period_category_growth.csv) | 신뢰 구간 업종별 증감 |
+| [store_location_grid_202603.csv](data/processed/store_location_grid_202603.csv) | 2026년 3월 좌표를 0.01도 격자로 집계한 지도 데이터 |
 | [category_change_decomposition.csv](data/processed/category_change_decomposition.csv) | 업소 등장·이탈·유지·업종 이동 분해 |
 
 <details>
@@ -185,6 +186,7 @@ daejeon-commercial-analysis/
 
 - 독립적인 분기말 시점이 9개라 장기 계절성이나 예측 모델을 안정적으로 추정하기 어렵습니다.
 - 2025년 9월이 없어 10월 관측치를 분기말 자료처럼 사용하지 않았습니다.
+- 지도는 위치 분포를 읽기 위한 격자 집계이며 개별 점포의 정확한 위치나 상권 경계를 나타내지 않습니다. OpenStreetMap 배경을 표시하려면 인터넷 연결이 필요합니다.
 - 업소번호의 등장·이탈만으로 실제 개업·폐업과 행정·수집 과정의 변화를 구분할 수 없습니다.
 - 외부 경기, 인구, 금리, 유동인구 등 설명 변수를 결합하지 않아 변화 원인은 가설 수준으로 해석했습니다.
 
