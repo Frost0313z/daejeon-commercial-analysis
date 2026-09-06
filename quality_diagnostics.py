@@ -194,7 +194,7 @@ def draw_cohort(rows: list[dict]) -> None:
     ax.grid(axis="y", color=GRID, linewidth=1)
     ax.set_axisbelow(True)
 
-    for index, name in ((3, "2024-12\n1차 편입"), (6, "2025-10\n2차 편입")):
+    for index, name in ((3, "2024-12\n1차 수집범위 확대"), (6, "2025-10\n2차 수집범위 확대")):
         ax.axvline(index, color=RED, linewidth=1, linestyle="--", alpha=.55)
         ax.text(index, max(total) * 1.045, name, color=RED, fontsize=9,
                 ha="center", va="bottom", linespacing=1.35)
@@ -206,7 +206,7 @@ def draw_cohort(rows: list[dict]) -> None:
 
     ax.annotate(f"{total[3]:,}", (3, total[3]), textcoords="offset points",
                 xytext=(0, 12), ha="center", fontsize=9, color=INK)
-    ax.annotate("기준 회차 수록 업소만 고정해 추적\n(이후 신규·지연 편입은 추가하지 않음)",
+    ax.annotate("기준 회차 수록 업소만 고정해 추적\n(이후 신규·지연 수록분은 추가하지 않음)",
                 (1, cohort[1]), textcoords="offset points", xytext=(8, -46),
                 ha="left", fontsize=8.5, color=MUTED, linespacing=1.4,
                 arrowprops=dict(arrowstyle="-", color=MUTED, linewidth=.9,
@@ -220,7 +220,7 @@ def draw_cohort(rows: list[dict]) -> None:
     ax.set_ylabel("업소 수")
     ax.set_ylim(min(cohort) * .93, max(total) * 1.12)
     ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
-    ax.set_title("수록 총수는 편입 때마다 튀지만 고정 코호트는 완만히 감소한다",
+    ax.set_title("수록 총수는 수집범위 변화 때마다 튀지만 고정 코호트는 완만히 감소한다",
                  fontsize=13, pad=34, loc="left", color=INK)
     ax.legend(frameon=False, fontsize=10, loc="lower left")
     fig.tight_layout()
