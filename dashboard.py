@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / "data" / "processed" / "daejeon_timeseries.csv"
 OUT = ROOT / "data" / "processed"
 SPATIAL = OUT / "store_location_grid_202603.csv"
+BOUNDARIES = OUT / "daejeon_district_boundaries.geojson"
 START, END = "2025-03-01", "2026-03-01"
 QUARTER_MONTHS = {"03", "06", "09", "12"}
 
@@ -79,9 +80,12 @@ def main() -> None:
 
     map_points = spatial_grid()
     assert sum(r["count"] for r in map_points) == city[END]
+    boundaries = json.loads(BOUNDARIES.read_text(encoding="utf-8-sig"))
+    assert {f["properties"]["district"] for f in boundaries["features"]} == set(districts)
     payload = {"periods": periods, "city": city, "districts": districts,
                "categories": categories, "districtGrowth": district_growth,
-               "categoryGrowth": category_growth, "mapPoints": map_points}
+               "categoryGrowth": category_growth, "mapPoints": map_points,
+               "boundaries": boundaries}
     template = (ROOT / "dashboard-template.html").read_text(encoding="utf-8")
     html = template.replace("__DASHBOARD_DATA__", json.dumps(payload, ensure_ascii=False))
     (ROOT / "interactive-dashboard.html").write_text(html, encoding="utf-8")
