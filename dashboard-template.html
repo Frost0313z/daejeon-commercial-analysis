@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     :root{--bg:#0f1319;--surface:#1a1f27;--text:#e8edf3;--muted:#93a2b3;--line:#2b323c;--blue:#4c8dff;--teal:#22c3a6;--red:#f0625f;--soft:#16233d}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}main{max-width:1180px;margin:auto;padding:32px 22px 56px}header{margin-bottom:24px}h1{margin:0 0 8px;font-size:clamp(26px,4vw,42px);letter-spacing:-.04em}h2{font-size:20px;margin:0 0 16px}p{line-height:1.65}.sub{color:var(--muted);margin:0}.notice{margin-top:16px;padding:12px 14px;border-left:4px solid var(--blue);background:var(--soft);font-size:14px}.notice.warn{border-left-color:var(--red);background:#3a2124}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}.card,.panel{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:14px}.card{padding:18px}.label{font-size:13px;color:var(--muted)}.value{font-size:28px;font-weight:700;margin-top:6px}.positive{color:var(--teal)}.negative{color:var(--red)}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}.panel{padding:20px;margin-bottom:16px}.controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}label{font-size:13px;color:var(--muted);display:grid;gap:6px}select{min-width:190px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}svg{display:block;width:100%;height:auto}.axis{stroke:#4b5563;stroke-width:1}.grid{stroke:#232933;stroke-width:1}.chart-line{fill:none;stroke:var(--blue);stroke-width:3}.chart-point{fill:var(--surface);stroke:var(--blue);stroke-width:3;cursor:pointer}.bar{cursor:pointer}.tooltip{position:fixed;pointer-events:none;opacity:0;background:#050709;color:#fff;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.45);padding:8px 10px;border-radius:7px;font-size:12px;line-height:1.5;z-index:30;transition:opacity .1s}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:600}.foot{font-size:13px;color:var(--muted);margin-top:14px}@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:minmax(0,1fr)}}@media(max-width:460px){main{padding:22px 14px}.stats{grid-template-columns:1fr}.value{font-size:22px}.panel{padding:14px}select{min-width:0;width:100%}.controls label{width:100%}}
-    #map{height:520px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}#map .leaflet-tile-pane{filter:brightness(.62) invert(1) contrast(.85) hue-rotate(180deg) saturate(.55)}.map-note{margin-bottom:0}.density-filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.density-filter>span{font-size:13px;color:var(--muted)}.density-filter label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer}.density-filter i{width:13px;height:13px;border:2px solid var(--surface);border-radius:50%;box-shadow:0 0 0 1px #5b6675}.dong-legend{display:flex;align-items:center;gap:5px;min-height:22px;font-size:12px;color:var(--muted)}.dong-legend i{width:24px;height:10px;border-radius:2px}
+    #map{height:520px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}#map .leaflet-tile-pane{filter:brightness(.62) invert(1) contrast(.85) hue-rotate(180deg) saturate(.55)}.map-note{margin-bottom:0}.density-filter,.metric-filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;height:39px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.density-filter>span,.metric-filter>span{font-size:13px;color:var(--muted)}.metric-filter select{min-width:190px}.density-filter label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer}.density-filter i{width:13px;height:13px;border:2px solid var(--surface);border-radius:50%;box-shadow:0 0 0 1px #5b6675}.dong-legend{display:flex;align-items:center;gap:5px;min-height:22px;font-size:12px;color:var(--muted)}.dong-legend i{width:24px;height:10px;border-radius:2px}
     .heatmap-wrap{overflow-x:auto}.heatmap-cell{cursor:pointer}.heatmap-legend{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-top:10px}.heatmap-legend i{width:24px;height:10px;border-radius:2px}
     .series-checks{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:16px}.series-checks label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer;font-size:13px}.series-checks i{width:12px;height:12px;border-radius:3px;display:inline-block}
     .scatter-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}.scatter-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}.scatter-point{cursor:pointer}
@@ -16,6 +16,8 @@
     .period-ticks{position:relative;height:14px;font-size:11px;color:var(--muted)}.period-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;cursor:pointer;padding:0 2px}.period-ticks span:hover{color:var(--text)}.period-ticks .on{color:var(--blue);font-weight:700}.period-ticks .caution{color:var(--red)}@media(max-width:460px){.period-ticks{display:none}}
     .range-slider{position:relative;width:100%;height:18px}.range-slider .track{position:absolute;top:7px;left:9px;right:9px;height:4px;background:var(--line);border-radius:2px}.range-slider .fill{position:absolute;top:7px;height:4px;background:var(--blue);border-radius:2px;pointer-events:none}.range-slider input[type=range]{position:absolute;top:0;left:0;width:100%;height:18px;margin:0;background:none;-webkit-appearance:none;appearance:none;pointer-events:none}.range-slider input[type=range]::-webkit-slider-runnable-track{-webkit-appearance:none;width:100%;height:18px;background:transparent}.range-slider input[type=range]::-moz-range-track{width:100%;height:18px;background:transparent;border:none}.range-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:0;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}#periodStart{z-index:3}#periodEnd{z-index:4}
     .period-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 2px;margin:0 0 16px;border-bottom:1px solid var(--line)}.period-sticky .notice{margin-top:2px}
+    .info-hint{position:relative;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);align-self:center}.info-icon{width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);background:none;color:var(--muted);font-size:11px;font-weight:700;line-height:1;cursor:help;display:inline-flex;align-items:center;justify-content:center;padding:0}.info-icon:hover,.info-icon:focus-visible,.info-hint.show .info-icon{border-color:var(--blue);color:var(--blue)}.info-callout{position:absolute;left:0;top:calc(100% + 8px);z-index:900;width:300px;max-width:80vw;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 10px 28px rgba(0,0,0,.4);visibility:hidden;opacity:0;transform:translateY(-4px);transition:opacity .12s,transform .12s;pointer-events:none}.info-hint:hover .info-callout,.info-hint:focus-within .info-callout,.info-hint.show .info-callout{visibility:visible;opacity:1;transform:translateY(0);pointer-events:auto}.info-callout{display:grid;gap:9px}.info-callout div{font-size:12.5px;line-height:1.55;color:var(--text)}.info-callout strong{display:block;color:var(--blue);margin-bottom:2px}
+    .controls.fill{flex-wrap:nowrap}.controls.fill label{flex:1 1 0;min-width:0}.controls.fill select{width:100%}@media(max-width:700px){.controls.fill{flex-wrap:wrap}.controls.fill label{flex:1 1 160px}}
   </style>
 </head>
 <body>
@@ -47,6 +49,40 @@
     <div class="card"><div class="label">순증</div><div class="value positive" id="changeValue"></div></div>
     <div class="card"><div class="label">증가율</div><div class="value positive" id="growthValue"></div></div>
   </section>
+  <section class="panel">
+    <h2 id="mapTitle">상가 위치 분포</h2>
+    <div class="period-slider">
+      <span>관측 시점</span>
+      <div class="range-track">
+        <input type="range" id="mapPeriod" min="0" max="0" step="1" value="0" aria-label="지도에 표시할 관측 시점">
+        <div class="period-ticks" id="mapPeriodTicks" aria-hidden="true"></div>
+      </div>
+      <output id="mapPeriodLabel" for="mapPeriod"></output>
+    </div>
+    <div class="controls fill">
+      <label>자치구<select id="mapDistrict"><option value="">전체 자치구</option></select></label>
+      <label id="mapDongLabel" hidden>행정동<select id="mapDong"><option value="">전체 행정동</option></select></label>
+      <label>업종<select id="mapCategory"><option value="">전체 업종</option></select></label>
+    </div>
+    <div class="controls">
+      <div class="density-filter" role="group" aria-label="상가 밀도 필터"><span>밀도</span><label><input type="checkbox" name="density" value="low" checked><i style="background:#2563eb"></i>낮음</label><label><input type="checkbox" name="density" value="medium" checked><i style="background:#7c3aed"></i>중간</label><label><input type="checkbox" name="density" value="high" checked><i style="background:#dc2626"></i>높음</label></div>
+      <div class="metric-filter"><span>지표</span><select id="dongMetric"><option value="">표시 안 함</option><option value="density">인구 1,000명당 업소</option><option value="hhi">업종 집중도(HHI)</option><option value="survival">고정 코호트 잔존율</option></select></div>
+      <span class="info-hint"><button type="button" class="info-icon" aria-label="지표 설명 보기" aria-describedby="metricInfoCallout">?</button>
+        <div class="info-callout" id="metricInfoCallout" role="tooltip">
+          <div><strong>① 공급 밀도</strong>그 동 주민 1,000명당 가게 수입니다. 숫자가 클수록 가게가 촘촘하게 몰려 있다는 뜻입니다.</div>
+          <div><strong>② HHI(업종 집중도)</strong>0~1 사이 값으로, 0에 가까울수록 다양한 업종이 섞여 있고 1에 가까울수록 음식점처럼 특정 업종 하나가 그 동 상권 대부분을 차지한다는 뜻입니다.</div>
+          <div><strong>③ 고정 코호트 잔존율</strong>2024년 3월에 있던 가게 중 지금도 같은 번호로 남아 있는 비율입니다. 70%면 그때 가게 10곳 중 7곳이 아직 있다는 뜻이고, 낮을수록 가게가 자주 바뀌는 동네라는 신호입니다.</div>
+        </div>
+      </span>
+    </div>
+    <div class="dong-legend" id="dongLegend" hidden></div>
+    <div id="map" role="img" aria-label="대전 상가 위치 분포 지도"></div>
+    <p class="foot map-note">행정동 경계: admdongkor/SGIS·행정안전부, 자치구 경계·배경 지도: OpenStreetMap contributors.</p>
+    <h3 style="margin:24px 0 10px;font-size:16px">이 시점의 행정동 공급밀도 × 업종 다양성(HHI)</h3>
+    <svg id="dongScatter" viewBox="0 0 640 380" role="img" aria-label="행정동 공급밀도와 업종 다양성 산점도"></svg>
+    <div class="scatter-legend" id="scatterLegend"></div>
+    <p class="foot">가로축은 인구 1,000명당 업소 수(로그 스케일), 세로축은 업종 집중도 HHI(낮을수록 다양)입니다. 위 슬라이더의 시점과 자치구 선택이 그대로 반영됩니다.</p>
+  </section>
   <div class="layout">
     <section class="panel">
       <h2>관측 시점별 상가 수</h2>
@@ -71,30 +107,6 @@
     <p class="foot">칸에 마우스를 올리면 자치구·업종별 시작·종료 상가 수와 증감률을 확인할 수 있습니다.</p>
   </section>
   <section class="panel">
-    <h2 id="mapTitle">상가 위치 분포</h2>
-    <div class="period-slider">
-      <span>관측 시점</span>
-      <div class="range-track">
-        <input type="range" id="mapPeriod" min="0" max="0" step="1" value="0" aria-label="지도에 표시할 관측 시점">
-        <div class="period-ticks" id="mapPeriodTicks" aria-hidden="true"></div>
-      </div>
-      <output id="mapPeriodLabel" for="mapPeriod"></output>
-    </div>
-    <div class="controls">
-      <label>자치구<select id="mapDistrict"><option value="">전체 자치구</option></select></label>
-      <label>업종<select id="mapCategory"><option value="">전체 업종</option></select></label>
-      <label>행정동 색상<select id="dongMetric"><option value="">표시 안 함</option><option value="density">인구 1,000명당 업소</option><option value="hhi">업종 집중도(HHI)</option><option value="survival">고정 코호트 잔존율</option></select></label>
-      <div class="density-filter" role="group" aria-label="상가 밀도 필터"><span>밀도</span><label><input type="checkbox" name="density" value="low" checked><i style="background:#2563eb"></i>낮음</label><label><input type="checkbox" name="density" value="medium" checked><i style="background:#7c3aed"></i>중간</label><label><input type="checkbox" name="density" value="high" checked><i style="background:#dc2626"></i>높음</label></div>
-    </div>
-    <div class="dong-legend" id="dongLegend" hidden></div>
-    <div id="map" role="img" aria-label="대전 상가 위치 분포 지도"></div>
-    <p class="foot map-note">슬라이더를 드래그하면 2024년 3월부터 2026년 6월까지 관측 시점별 분포와 행정동 지표를 함께 확인할 수 있습니다. 위치 노출과 렌더링 속도를 고려해 좌표를 0.01도 격자(대략 1km)로 묶고, 각 원은 격자 안 상가들의 평균 위치에 놓았습니다. 원의 크기와 색은 선택 조건의 상가 밀도를 나타내며 전체 시점 공통 기준을 사용합니다. 행정동 색상은 공급 밀도·HHI·2024년 3월 고정 코호트 잔존율 중 선택할 수 있습니다. 행정동 경계: admdongkor/SGIS·행정안전부, 자치구 경계·배경 지도: OpenStreetMap contributors.</p>
-    <h3 style="margin:24px 0 10px;font-size:16px">이 시점의 행정동 공급밀도 × 업종 다양성(HHI)</h3>
-    <svg id="dongScatter" viewBox="0 0 640 380" role="img" aria-label="행정동 공급밀도와 업종 다양성 산점도"></svg>
-    <div class="scatter-legend" id="scatterLegend"></div>
-    <p class="foot">가로축은 인구 1,000명당 업소 수(로그 스케일), 세로축은 업종 집중도 HHI(낮을수록 다양)입니다. 위 슬라이더의 시점과 자치구 선택이 그대로 반영됩니다.</p>
-  </section>
-  <section class="panel">
     <h2 id="tableTitle">자치구별 상세 결과</h2>
     <div style="overflow-x:auto"><table><thead><tr><th>항목</th><th id="colStart">2025-03</th><th id="colEnd">2026-03</th><th>증감</th><th>증감률</th></tr></thead><tbody id="resultRows"></tbody></table></div>
     <p class="foot">상가 수는 공공데이터 파일에 수록된 업소 수입니다. 매출·고용·실제 개폐업 건수를 의미하지 않습니다.</p>
@@ -104,7 +116,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const data=__DASHBOARD_DATA__,fmt=n=>n.toLocaleString('ko-KR'),pct=n=>`${n>=0?'+':''}${n.toFixed(2)}%`;
-const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesChecks=document.getElementById('seriesChecks'),seriesDongDistrict=document.getElementById('seriesDongDistrict'),seriesDongDistrictLabel=document.getElementById('seriesDongDistrictLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend'),heatmapChart=document.getElementById('heatmapChart'),heatmapLegend=document.getElementById('heatmapLegend'),heatmapTitle=document.getElementById('heatmapTitle'),dongScatter=document.getElementById('dongScatter'),scatterLegend=document.getElementById('scatterLegend'),periodStart=document.getElementById('periodStart'),periodEnd=document.getElementById('periodEnd'),periodFill=document.getElementById('periodFill'),periodTicks=document.getElementById('periodTicks'),periodRangeLabel=document.getElementById('periodRangeLabel'),periodSub=document.getElementById('periodSub'),periodWarning=document.getElementById('periodWarning'),colStart=document.getElementById('colStart'),colEnd=document.getElementById('colEnd');
+const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesChecks=document.getElementById('seriesChecks'),seriesDongDistrict=document.getElementById('seriesDongDistrict'),seriesDongDistrictLabel=document.getElementById('seriesDongDistrictLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapDong=document.getElementById('mapDong'),mapDongLabel=document.getElementById('mapDongLabel'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend'),heatmapChart=document.getElementById('heatmapChart'),heatmapLegend=document.getElementById('heatmapLegend'),heatmapTitle=document.getElementById('heatmapTitle'),dongScatter=document.getElementById('dongScatter'),scatterLegend=document.getElementById('scatterLegend'),periodStart=document.getElementById('periodStart'),periodEnd=document.getElementById('periodEnd'),periodFill=document.getElementById('periodFill'),periodTicks=document.getElementById('periodTicks'),periodRangeLabel=document.getElementById('periodRangeLabel'),periodSub=document.getElementById('periodSub'),periodWarning=document.getElementById('periodWarning'),colStart=document.getElementById('colStart'),colEnd=document.getElementById('colEnd');
 const DISTRICT_PALETTE={'동구':'#185b79','중구':'#bb5b28','서구':'#5f793e','유성구':'#7b5596','대덕구':'#747474'};
 const CATEGORY_PALETTE=['#4c8dff','#f0625f','#22c3a6','#f59e0b','#a78bfa','#22d3ee','#f472b6','#a3e635','#fb923c','#94a3b8'];
 const CAUTION_PERIODS={'2024-12-01':'2024년 말 전국 단위 데이터 편입(1차 수집범위 확대)이 있었던 시점입니다.','2025-10-01':'정규 분기 말이 아닌 보조 관측월입니다.','2026-06-01':'업소번호 교체가 컸던 구간입니다.'};
@@ -247,7 +259,8 @@ function drawDongScatter(){
   svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));
   svg.append(el('text',{x:(m.l+W-m.r)/2,y:H-8,'text-anchor':'middle',fill:'var(--muted)','font-size':11},'인구 1,000명당 업소 수 (로그 스케일)'));
   rows.forEach(r=>{
-    const c=el('circle',{cx:x(r.density),cy:y(r.hhi),r:5,fill:DISTRICT_PALETTE[r.district]||'#4c8dff',stroke:'var(--surface)','stroke-width':1,opacity:.9,class:'scatter-point'});
+    const selected=mapDong.value===`${r.district} ${r.dong}`;
+    const c=el('circle',{cx:x(r.density),cy:y(r.hhi),r:selected?8:5,fill:DISTRICT_PALETTE[r.district]||'#4c8dff',stroke:selected?'#f97316':'var(--surface)','stroke-width':selected?3:1,opacity:.9,class:'scatter-point'});
     c.addEventListener('mousemove',e=>showTip(e,`<b>${r.district} ${r.dong}</b><br>밀도 ${r.density.toFixed(1)}개/천명 · HHI ${r.hhi.toFixed(3)}`));
     c.addEventListener('mouseleave',hideTip);
     svg.append(c);
@@ -282,38 +295,77 @@ function initMap(){
   if(!window.L){document.getElementById('map').textContent='배경 지도를 불러오려면 인터넷 연결이 필요합니다.';return}
   const map=L.map('map').setView([36.35,127.38],11),dongLayer=L.layerGroup().addTo(map),boundaryLayer=L.layerGroup().addTo(map),layer=L.layerGroup().addTo(map),densityChecks=[...document.querySelectorAll('input[name="density"]')];
   map.createPane('choroplethPane');map.getPane('choroplethPane').style.zIndex=350;
-  map.createPane('districtPane');map.getPane('districtPane').style.zIndex=650;map.getPane('districtPane').style.pointerEvents='none';
+  map.createPane('districtPane');map.getPane('districtPane').style.zIndex=260;map.getPane('districtPane').style.pointerEvents='none';
   const dongRenderer=L.canvas({pane:'choroplethPane',padding:.5}),boundaryRenderer=L.canvas({pane:'districtPane',padding:.5}),markerRenderer=L.canvas({padding:.5});
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
   const mapEl=document.getElementById('map'),allPoints=data.mapPeriods.flatMap(p=>data.mapPoints[p]),periodLabel=p=>`${p.slice(0,4)}년 ${+p.slice(5,7)}월`;
   mapDistrict.innerHTML+=[...new Set(allPoints.map(p=>p.district))].sort().map(x=>`<option>${x}</option>`).join('');
   mapCategory.innerHTML+=[...new Set(allPoints.map(p=>p.category))].sort().map(x=>`<option>${x}</option>`).join('');
+  const dongFeatureByName=Object.fromEntries(data.dongBoundaries.features.map(f=>[`${f.properties.district} ${f.properties.dong}`,f]));
+  function ringContains(ring,x,y){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const [xi,yi]=ring[i],[xj,yj]=ring[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside}return inside}
+  function polygonContains(rings,x,y){if(!ringContains(rings[0],x,y))return false;for(let i=1;i<rings.length;i++)if(ringContains(rings[i],x,y))return false;return true}
+  function geometryContains(geometry,lon,lat){if(geometry.type==='Polygon')return polygonContains(geometry.coordinates,lon,lat);if(geometry.type==='MultiPolygon')return geometry.coordinates.some(poly=>polygonContains(poly,lon,lat));return false}
+  function populateMapDong(){
+    const selected=mapDistrict.value;
+    mapDongLabel.hidden=!selected;
+    if(!selected){mapDong.innerHTML='<option value="">전체 행정동</option>';mapDong.value='';return}
+    const names=Object.keys(data.dongDistrict).filter(n=>data.dongDistrict[n]===selected).sort();
+    mapDong.innerHTML='<option value="">전체 행정동</option>'+names.map(n=>`<option>${n}</option>`).join('');
+    mapDong.value='';
+  }
   mapPeriod.max=data.mapPeriods.length-1;mapPeriod.value=Math.max(0,data.mapPeriods.indexOf('2026-03-01'));
   mapPeriodTicks.innerHTML=data.mapPeriods.map((p,i)=>`<span style="left:${i/(data.mapPeriods.length-1)*100}%">${p.slice(2,7)}</span>`).join('');
   [...mapPeriodTicks.children].forEach((t,i)=>t.addEventListener('click',()=>{mapPeriod.value=i;mapPeriod.dispatchEvent(new Event('input'))}));
   const ticks=[...mapPeriodTicks.children],palette=['#eff6ff','#bfdbfe','#60a5fa','#2563eb','#1e3a8a'],metricNames={density:'인구 1,000명당 업소',hhi:'업종 집중도 HHI',survival:'고정 코호트 잔존율'};
-  function grouped(period){const m=new Map();data.mapPoints[period].forEach(p=>{if(mapDistrict.value&&p.district!==mapDistrict.value)return;if(mapCategory.value&&p.category!==mapCategory.value)return;const key=`${p.lat.toFixed(2)}, ${p.lon.toFixed(2)}`,v=m.get(key)||{key,lat:0,lon:0,count:0};v.lat+=p.lat*p.count;v.lon+=p.lon*p.count;v.count+=p.count;m.set(key,v)});return [...m.values()].map(v=>({key:v.key,lat:v.lat/v.count,lon:v.lon/v.count,count:v.count}))}
+  function grouped(period){
+    const m=new Map(),dongFeature=mapDong.value?dongFeatureByName[mapDong.value]:null;
+    data.mapPoints[period].forEach(p=>{
+      if(mapDistrict.value&&p.district!==mapDistrict.value)return;
+      if(mapCategory.value&&p.category!==mapCategory.value)return;
+      if(dongFeature&&!geometryContains(dongFeature.geometry,p.lon,p.lat))return;
+      const key=`${p.lat.toFixed(2)}, ${p.lon.toFixed(2)}`,v=m.get(key)||{key,lat:0,lon:0,count:0};v.lat+=p.lat*p.count;v.lon+=p.lon*p.count;v.count+=p.count;m.set(key,v)
+    });
+    return [...m.values()].map(v=>({key:v.key,lat:v.lat/v.count,lon:v.lon/v.count,count:v.count}))
+  }
   let scaleMax=1;
   function rescale(){scaleMax=Math.max(1,...data.mapPeriods.flatMap(p=>grouped(p).map(g=>g.count)))}
-  function drawBoundary(){boundaryLayer.clearLayers();const selected=mapDistrict.value,filter=f=>!selected||f.properties.district===selected;if(selected)L.geoJSON(data.boundaries,{renderer:boundaryRenderer,filter,style:{color:'#111827',weight:14/3,opacity:.9,fillOpacity:0,interactive:false}}).addTo(boundaryLayer);const boundary=L.geoJSON(data.boundaries,{renderer:boundaryRenderer,filter,style:{color:selected?'#facc15':'#64748b',weight:selected?8/3:1.5,opacity:selected?1:.7,fillColor:'#facc15',fillOpacity:selected?.18:0,dashArray:selected?null:'5 5',interactive:false}}).addTo(boundaryLayer);map.fitBounds(boundary.getBounds(),{padding:[20,20],maxZoom:selected?12:11})}
+  function drawBoundary(){
+    boundaryLayer.clearLayers();
+    const selected=mapDistrict.value,filter=f=>!selected||f.properties.district===selected;
+    if(selected)L.geoJSON(data.boundaries,{renderer:boundaryRenderer,filter,style:{color:'#111827',weight:2,opacity:.9,fillOpacity:0,interactive:false}}).addTo(boundaryLayer);
+    const boundary=L.geoJSON(data.boundaries,{renderer:boundaryRenderer,filter,style:{color:selected?'#facc15':'#64748b',weight:selected?1:1.5,opacity:selected?1:.7,fillColor:'#facc15',fillOpacity:selected?.18:0,dashArray:selected?null:'5 5',interactive:false}}).addTo(boundaryLayer);
+    let bounds=boundary.getBounds(),maxZoom=selected?12:11;
+    const dongFeature=mapDong.value?dongFeatureByName[mapDong.value]:null;
+    if(dongFeature){
+      const dongOutline=L.geoJSON(dongFeature,{renderer:boundaryRenderer,style:{color:'#f97316',weight:2.5,opacity:1,fillOpacity:0,interactive:false}}).addTo(boundaryLayer);
+      bounds=dongOutline.getBounds();maxZoom=14;
+    }
+    map.fitBounds(bounds,{padding:[20,20],maxZoom});
+  }
   function drawDong(){
     dongLayer.clearLayers();const metric=dongMetric.value;
     if(!metric){dongLegend.hidden=true;return}
     const period=data.mapPeriods[+mapPeriod.value],rows=data.dongMetrics[period],byCode=Object.fromEntries(rows.map(r=>[r.dong_code,r])),values=rows.map(r=>r[metric]).sort((a,b)=>a-b),thresholds=[.2,.4,.6,.8].map(q=>values[Math.floor((values.length-1)*q)]),format=v=>metric==='density'?`${v.toFixed(1)}개/천 명`:metric==='hhi'?v.toFixed(3):`${v.toFixed(1)}%`,color=v=>palette[thresholds.filter(t=>v>t).length];
-    L.geoJSON(data.dongBoundaries,{renderer:dongRenderer,filter:f=>!mapDistrict.value||f.properties.district===mapDistrict.value,style:f=>{const row=byCode[f.properties.dong_code];return{color:'#fff',weight:.8,opacity:.9,fillColor:color(row[metric]),fillOpacity:.64}},onEachFeature:(f,l)=>{const row=byCode[f.properties.dong_code];l.bindTooltip(`<b>${row.district} ${row.dong}</b><br>${periodLabel(period)} · ${metricNames[metric]} ${format(row[metric])}`)}}).addTo(dongLayer);
+    L.geoJSON(data.dongBoundaries,{renderer:dongRenderer,filter:f=>!mapDistrict.value||f.properties.district===mapDistrict.value,style:f=>{const row=byCode[f.properties.dong_code],selected=mapDong.value===`${f.properties.district} ${f.properties.dong}`;return{color:selected?'#f97316':'#fff',weight:selected?3:.8,opacity:.9,fillColor:color(row[metric]),fillOpacity:.64}},onEachFeature:(f,l)=>{const row=byCode[f.properties.dong_code];l.bindTooltip(`<b>${row.district} ${row.dong}</b><br>${periodLabel(period)} · ${metricNames[metric]} ${format(row[metric])}`)}}).addTo(dongLayer);
     dongLegend.hidden=false;dongLegend.innerHTML=`<strong>${metricNames[metric]}</strong><span>${format(values[0])}</span>${palette.map(c=>`<i style="background:${c}"></i>`).join('')}<span>${format(values.at(-1))}</span>`;
   }
   function draw(){layer.clearLayers();const index=+mapPeriod.value,period=data.mapPeriods[index],label=periodLabel(period),points=grouped(period).sort((x,y)=>x.count-y.count),total=points.reduce((s,p)=>s+p.count,0),active=new Set(densityChecks.filter(x=>x.checked).map(x=>x.value));mapPeriodLabel.textContent=label;ticks.forEach((t,i)=>t.classList.toggle('on',i===index));mapTitle.textContent=`${label} 상가 위치 분포 (${fmt(total)}개)`;mapEl.setAttribute('aria-label',`${label} 대전 상가 위치 분포 지도`);points.forEach(p=>{const strength=p.count/scaleMax,band=strength>.35?'high':strength>.12?'medium':'low';if(!active.has(band))return;const color=band==='high'?'#dc2626':band==='medium'?'#7c3aed':'#2563eb',marker=L.circleMarker([p.lat,p.lon],{renderer:markerRenderer,radius:6+20*Math.sqrt(strength),stroke:false,fillColor:color,fillOpacity:.55}).bindTooltip(`<b>${fmt(p.count)}개</b><br>${label} · 격자 ${p.key}`);marker.on('mouseover',()=>marker.setStyle({fillOpacity:.9})).on('mouseout',()=>marker.setStyle({fillOpacity:.55}));marker.addTo(layer)})}
-  mapDistrict.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw();drawDongScatter()});
+  mapDistrict.addEventListener('change',()=>{populateMapDong();drawBoundary();drawDong();rescale();draw();drawDongScatter()});
+  mapDong.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw();drawDongScatter()});
   mapCategory.addEventListener('change',()=>{rescale();draw()});
   mapPeriod.addEventListener('input',()=>{drawDong();draw();drawDongScatter()});
   dongMetric.addEventListener('change',drawDong);
   densityChecks.forEach(x=>x.addEventListener('change',draw));
-  drawBoundary();drawDong();rescale();draw();drawDongScatter();
+  populateMapDong();drawBoundary();drawDong();rescale();draw();drawDongScatter();
 }
 seriesType.addEventListener('change',populateSeries);seriesDongDistrict.addEventListener('change',populateSeries);barType.addEventListener('change',drawBars);
 periodStart.addEventListener('input',()=>{if(+periodStart.value>+periodEnd.value)periodStart.value=periodEnd.value;updatePeriod()});
 periodEnd.addEventListener('input',()=>{if(+periodEnd.value<+periodStart.value)periodEnd.value=periodStart.value;updatePeriod()});
+const infoHint=document.querySelector('.info-hint');
+if(infoHint){
+  infoHint.querySelector('.info-icon').addEventListener('click',e=>{e.preventDefault();infoHint.classList.toggle('show')});
+  document.addEventListener('click',e=>{if(!infoHint.contains(e.target))infoHint.classList.remove('show')});
+}
 populatePeriods();updatePeriod();populateSeries();initMap();
 </script>
 </body>

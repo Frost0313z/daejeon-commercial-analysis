@@ -11,6 +11,7 @@
   data/processed/dong_indicators.csv  행정동별 LQ·HHI·공급밀도·인구구조(2026-03 단면)
   data/processed/dong_indicators_timeseries.csv  행정동 지표 10개 시점
   data/processed/dong_survival.csv    2024-03 고정 코호트의 행정동별 잔존율
+  data/processed/category_dong_competition.csv  업종별 행정동 창업 경쟁 강도(2026-03 단면)
 """
 
 from __future__ import annotations
@@ -29,7 +30,7 @@ POP_DIR = ROOT / "01. 인구 데이터"
 RAW_PATTERN = "*대전_20[0-9][0-9][0-9][0-9].csv"
 STAMPS = ["202403", "202406", "202409", "202412", "202503",
           "202506", "202510", "202512", "202603", "202606"]
-FOCUS = "2026-03-01"  # 주 분석 시점. 품질 진단에서 확인한 신뢰 구간의 끝
+FOCUS = "2026-03-01"  # 주 분석 단면. 변화 비교 구간은 2025-03~2026-06(REPORT 5.7)
 STAMP_IN_NAME = re.compile(r"_(20\d{4})\.csv$")
 AGE_COL = re.compile(r"^(\d+)세(?:남자|여자)$")
 AGE_TOP = re.compile(r"^110세이상\s*(?:남자|여자)$")
@@ -246,6 +247,38 @@ def check_lq(rows: list[dict], panel: list[dict], period: str) -> None:
     print(f"검증 통과: {len(categories)}개 업종 모두 가중 LQ 평균 1.0")
 
 
+def category_competition(panel: list[dict], population: dict[str, dict],
+                          indicator_rows: list[dict], period: str) -> list[dict]:
+    """예비 창업자 관점의 업종별 행정동 경쟁 강도: 인구 1,000명당 같은 업종 점포 수.
+
+    LQ(입지계수)는 업종 구성비를 도시 평균과 비교한 상대 지표라 특화 여부는 보여주지만,
+    실제 몇 개의 동종 점포와 경쟁하는지는 알려주지 않는다. 여기서는 인구 대비 절대 밀도를
+    별도로 계산해 LQ와 나란히 둔다.
+    """
+    rows = [r for r in panel if r["period"] == period]
+    by_dong_category: dict[tuple[str, str], int] = defaultdict(int)
+    names = {}
+    for r in rows:
+        by_dong_category[(r["dong_code"], r["category"])] += r["store_count"]
+        names[r["dong_code"]] = (r["district"], r["dong"])
+    lq_lookup = {r["dong_code"]: r for r in indicator_rows}
+
+    result = []
+    for (code, category), count in by_dong_category.items():
+        pop = population[code]
+        low_population = pop["population"] < 1000
+        result.append({
+            "category": category, "dong_code": code,
+            "district": names[code][0], "dong": names[code][1],
+            "category_store_count": count, "population": pop["population"],
+            "low_population_flag": low_population,
+            "category_density_per_1000": None if low_population else
+                round(count / pop["population"] * 1000, 2),
+            "lq": lq_lookup[code][f"lq_{category}"],
+        })
+    return sorted(result, key=lambda r: (r["category"], r["dong"]))
+
+
 def correlation(xs: list[float], ys: list[float]) -> float:
     n = len(xs)
     mean_x, mean_y = sum(xs) / n, sum(ys) / n
@@ -329,6 +362,23 @@ def main() -> None:
     for r in ranked[-5:]:
         print(f"  {r['district']} {r['dong']:<8}{r['supply_density_per_1000']:>6.1f}개 "
               f"(업소 {r['store_count']:,} / 인구 {r['population']:,})")
+
+    focus_population = {r["dong_code"]: r for r in population_panel if r["period"] == FOCUS}
+    competition_rows = category_competition(panel, focus_population, rows, FOCUS)
+    write_csv("category_dong_competition.csv", competition_rows)
+
+    sample_category = "음식점업"
+    sample = sorted((r for r in competition_rows
+                      if r["category"] == sample_category and not r["low_population_flag"]),
+                     key=lambda r: r["category_density_per_1000"])
+    print(f"\n{FOCUS[:7]} '{sample_category}' 창업 시 인구 1,000명당 경쟁 점포가 가장 적은 행정동 5곳")
+    for r in sample[:5]:
+        print(f"  {r['district']} {r['dong']:<8}{r['category_density_per_1000']:>6.2f}개 "
+              f"(LQ {r['lq']:.2f}, 인구 {r['population']:,})")
+    print(f"{FOCUS[:7]} '{sample_category}' 창업 시 인구 1,000명당 경쟁 점포가 가장 많은 행정동 5곳")
+    for r in sample[-5:]:
+        print(f"  {r['district']} {r['dong']:<8}{r['category_density_per_1000']:>6.2f}개 "
+              f"(LQ {r['lq']:.2f}, 인구 {r['population']:,})")
 
     categories = sorted({r["category"] for r in panel if r["period"] == FOCUS})
     corr_rows = population_correlations(rows, categories)

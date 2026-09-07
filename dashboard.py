@@ -1,4 +1,4 @@
-"""2025-03~2026-03 신뢰도 우선 구간의 인터랙티브 대시보드를 생성한다."""
+"""2025-03~2026-06 신뢰도 우선 구간의 인터랙티브 대시보드를 생성한다."""
 
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ BOUNDARIES = OUT / "daejeon_district_boundaries.geojson"
 DONG_BOUNDARIES = OUT / "daejeon_dong_boundaries.geojson"
 DONG_INDICATORS = OUT / "dong_indicators_timeseries.csv"
 DONG_PANEL = OUT / "dong_panel.csv"
-START, END = "2025-03-01", "2026-03-01"
+START, END = "2025-03-01", "2026-06-01"
 QUARTER_MONTHS = {"03", "06", "09", "12"}
 DAEJEON_BBOX = ((36.1, 36.6), (127.2, 127.7))  # 좌표계 오류 회차를 가려내기 위한 대전 외곽 범위
 
