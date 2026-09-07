@@ -11,8 +11,10 @@
     .heatmap-wrap{overflow-x:auto}.heatmap-cell{cursor:pointer}.heatmap-legend{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);margin-top:10px}.heatmap-legend i{width:24px;height:10px;border-radius:2px}
     .series-checks{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);margin-bottom:16px}.series-checks label{display:inline-flex;align-items:center;gap:5px;color:var(--text);cursor:pointer;font-size:13px}.series-checks i{width:12px;height:12px;border-radius:3px;display:inline-block}
     .scatter-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}.scatter-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}.scatter-point{cursor:pointer}
-    .period-slider{display:flex;align-items:center;gap:14px;margin-bottom:6px}.period-slider>span{font-size:13px;color:var(--muted);white-space:nowrap}.period-slider input{flex:1;min-width:0;accent-color:var(--blue);height:26px}.period-slider output{min-width:96px;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}.period-ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:14px}.period-ticks span{flex:1;text-align:center}.period-ticks span:first-child{text-align:left}.period-ticks span:last-child{text-align:right}.period-ticks .on{color:var(--blue);font-weight:700}.period-ticks .caution{color:var(--red)}@media(max-width:460px){.period-ticks{display:none}}
-    .range-slider{position:relative;flex:1;min-width:160px;height:18px}.range-slider .track{position:absolute;top:7px;left:0;right:0;height:4px;background:var(--line);border-radius:2px}.range-slider .fill{position:absolute;top:7px;height:4px;background:var(--blue);border-radius:2px;pointer-events:none}.range-slider input[type=range]{position:absolute;top:0;left:0;width:100%;height:18px;margin:0;background:none;-webkit-appearance:none;appearance:none;pointer-events:none}.range-slider input[type=range]::-webkit-slider-runnable-track{-webkit-appearance:none;width:100%;height:18px;background:transparent}.range-slider input[type=range]::-moz-range-track{width:100%;height:18px;background:transparent;border:none}.range-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:0;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}#periodStart{z-index:3}#periodEnd{z-index:4}
+    .period-slider{display:flex;align-items:center;gap:14px;margin-bottom:14px}.period-slider>span{font-size:13px;color:var(--muted);white-space:nowrap}.period-slider output{min-width:96px;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+    .range-track{flex:1;min-width:160px;display:flex;flex-direction:column;gap:6px}.range-track>input[type=range]{width:100%;margin:0;accent-color:var(--blue);height:26px}
+    .period-ticks{position:relative;height:14px;font-size:11px;color:var(--muted)}.period-ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;cursor:pointer;padding:0 2px}.period-ticks span:hover{color:var(--text)}.period-ticks .on{color:var(--blue);font-weight:700}.period-ticks .caution{color:var(--red)}@media(max-width:460px){.period-ticks{display:none}}
+    .range-slider{position:relative;width:100%;height:18px}.range-slider .track{position:absolute;top:7px;left:9px;right:9px;height:4px;background:var(--line);border-radius:2px}.range-slider .fill{position:absolute;top:7px;height:4px;background:var(--blue);border-radius:2px;pointer-events:none}.range-slider input[type=range]{position:absolute;top:0;left:0;width:100%;height:18px;margin:0;background:none;-webkit-appearance:none;appearance:none;pointer-events:none}.range-slider input[type=range]::-webkit-slider-runnable-track{-webkit-appearance:none;width:100%;height:18px;background:transparent}.range-slider input[type=range]::-moz-range-track{width:100%;height:18px;background:transparent;border:none}.range-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:18px;height:18px;margin-top:0;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]::-moz-range-thumb{pointer-events:auto;width:18px;height:18px;border-radius:50%;background:var(--blue);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--blue);cursor:grab}.range-slider input[type=range]:active::-webkit-slider-thumb{cursor:grabbing}#periodStart{z-index:3}#periodEnd{z-index:4}
     .period-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 2px;margin:0 0 16px;border-bottom:1px solid var(--line)}.period-sticky .notice{margin-top:2px}
   </style>
 </head>
@@ -25,15 +27,17 @@
   <div class="period-sticky" id="periodSticky">
     <div class="period-slider">
       <span>비교 구간</span>
-      <div class="range-slider" id="periodRange">
-        <div class="track"></div>
-        <div class="fill" id="periodFill"></div>
-        <input type="range" id="periodStart" min="0" max="0" step="1" value="0" aria-label="비교 시작 시점">
-        <input type="range" id="periodEnd" min="0" max="0" step="1" value="0" aria-label="비교 종료 시점">
+      <div class="range-track">
+        <div class="range-slider" id="periodRange">
+          <div class="track"></div>
+          <div class="fill" id="periodFill"></div>
+          <input type="range" id="periodStart" min="0" max="0" step="1" value="0" aria-label="비교 시작 시점">
+          <input type="range" id="periodEnd" min="0" max="0" step="1" value="0" aria-label="비교 종료 시점">
+        </div>
+        <div class="period-ticks" id="periodTicks" aria-hidden="true"></div>
       </div>
       <output id="periodRangeLabel"></output>
     </div>
-    <div class="period-ticks" id="periodTicks" aria-hidden="true"></div>
     <div class="notice warn" id="periodWarning" hidden></div>
   </div>
   <div class="notice">아래 핵심 지표·증감 그래프·히트맵·상세 결과는 여기서 고른 두 시점의 비교입니다. 기본값은 수집범위 변화가 안정된 신뢰도 우선 구간입니다. 슬라이더의 두 손잡이를 각각 드래그해 구간을 조정하세요. 위 시크바는 스크롤해도 상단에 고정되어 있어 다른 결과를 보면서 바로 조정할 수 있습니다.</div>
@@ -70,10 +74,12 @@
     <h2 id="mapTitle">상가 위치 분포</h2>
     <div class="period-slider">
       <span>관측 시점</span>
-      <input type="range" id="mapPeriod" min="0" max="0" step="1" value="0" aria-label="지도에 표시할 관측 시점">
+      <div class="range-track">
+        <input type="range" id="mapPeriod" min="0" max="0" step="1" value="0" aria-label="지도에 표시할 관측 시점">
+        <div class="period-ticks" id="mapPeriodTicks" aria-hidden="true"></div>
+      </div>
       <output id="mapPeriodLabel" for="mapPeriod"></output>
     </div>
-    <div class="period-ticks" id="mapPeriodTicks" aria-hidden="true"></div>
     <div class="controls">
       <label>자치구<select id="mapDistrict"><option value="">전체 자치구</option></select></label>
       <label>업종<select id="mapCategory"><option value="">전체 업종</option></select></label>
@@ -114,11 +120,16 @@ function populatePeriods(){
   periodStart.max=n;periodEnd.max=n;
   periodStart.value=data.periods.includes(data.reliableStart)?data.periods.indexOf(data.reliableStart):0;
   periodEnd.value=data.periods.includes(data.reliableEnd)?data.periods.indexOf(data.reliableEnd):n;
-  periodTicks.innerHTML=data.periods.map(p=>`<span class="${CAUTION_PERIODS[p]?'caution':''}">${shortLabel(p)}</span>`).join('');
+  periodTicks.innerHTML=data.periods.map((p,i)=>`<span class="${CAUTION_PERIODS[p]?'caution':''}" style="left:calc(9px + (100% - 18px) * ${i/n})">${shortLabel(p)}</span>`).join('');
+  [...periodTicks.children].forEach((t,i)=>t.addEventListener('click',()=>{
+    const si=+periodStart.value,ei=+periodEnd.value;
+    if(Math.abs(i-si)<=Math.abs(i-ei))periodStart.value=Math.min(i,ei);else periodEnd.value=Math.max(i,si);
+    updatePeriod();
+  }));
 }
 function updateFill(){
   const max=+periodStart.max||1,si=+periodStart.value,ei=+periodEnd.value;
-  periodFill.style.left=`${si/max*100}%`;periodFill.style.width=`${(ei-si)/max*100}%`;
+  periodFill.style.left=`calc(9px + (100% - 18px) * ${si/max})`;periodFill.style.width=`calc((100% - 18px) * ${(ei-si)/max})`;
   [...periodTicks.children].forEach((t,i)=>t.classList.toggle('on',i>=si&&i<=ei));
 }
 function updatePeriod(){
@@ -278,7 +289,8 @@ function initMap(){
   mapDistrict.innerHTML+=[...new Set(allPoints.map(p=>p.district))].sort().map(x=>`<option>${x}</option>`).join('');
   mapCategory.innerHTML+=[...new Set(allPoints.map(p=>p.category))].sort().map(x=>`<option>${x}</option>`).join('');
   mapPeriod.max=data.mapPeriods.length-1;mapPeriod.value=Math.max(0,data.mapPeriods.indexOf('2026-03-01'));
-  mapPeriodTicks.innerHTML=data.mapPeriods.map(p=>`<span>${p.slice(2,7)}</span>`).join('');
+  mapPeriodTicks.innerHTML=data.mapPeriods.map((p,i)=>`<span style="left:${i/(data.mapPeriods.length-1)*100}%">${p.slice(2,7)}</span>`).join('');
+  [...mapPeriodTicks.children].forEach((t,i)=>t.addEventListener('click',()=>{mapPeriod.value=i;mapPeriod.dispatchEvent(new Event('input'))}));
   const ticks=[...mapPeriodTicks.children],palette=['#eff6ff','#bfdbfe','#60a5fa','#2563eb','#1e3a8a'],metricNames={density:'인구 1,000명당 업소',hhi:'업종 집중도 HHI',survival:'고정 코호트 잔존율'};
   function grouped(period){const m=new Map();data.mapPoints[period].forEach(p=>{if(mapDistrict.value&&p.district!==mapDistrict.value)return;if(mapCategory.value&&p.category!==mapCategory.value)return;const key=`${p.lat.toFixed(2)}, ${p.lon.toFixed(2)}`,v=m.get(key)||{key,lat:0,lon:0,count:0};v.lat+=p.lat*p.count;v.lon+=p.lon*p.count;v.count+=p.count;m.set(key,v)});return [...m.values()].map(v=>({key:v.key,lat:v.lat/v.count,lon:v.lon/v.count,count:v.count}))}
   let scaleMax=1;
