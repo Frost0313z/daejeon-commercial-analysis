@@ -7,7 +7,7 @@
 [![Data](https://img.shields.io/badge/Data-Public_Data-0B5FFF)](https://www.data.go.kr/data/15083033/fileData.do)
 [![Status](https://img.shields.io/badge/Analysis-Verified-1F883D)](REPORT.md)
 
-**바로가기:** [📈 인터랙티브 대시보드 열기](interactive-dashboard.html) · [📘 분석 리포트](REPORT.md) · [🧭 분석 계획](ANALYSIS_PLAN.md) · [📓 기초 분석 노트북](analysis.ipynb)
+**바로가기:** [📈 인터랙티브 대시보드 열기](https://frost0313z.github.io/daejeon-commercial-analysis/) · [📘 분석 리포트](REPORT.md) · [🧭 분석 계획](ANALYSIS_PLAN.md) · [📓 기초 분석 노트북](analysis.ipynb)
 
 ---
 
@@ -56,7 +56,9 @@
 
 ## 3. 대시보드 따라 보기
 
-`interactive-dashboard.html` 파일을 내려받아 브라우저에서 열면 됩니다. 별도 서버가 필요 없고, 배경 지도만 인터넷 연결이 필요합니다. 아래는 위에서 아래로 스크롤하며 보는 순서 그대로입니다.
+**바로 보기: <https://frost0313z.github.io/daejeon-commercial-analysis/>** (GitHub Pages, 별도 설치 없음)
+
+로컬에서 보려면 `interactive-dashboard.html` 한 파일만 내려받아 브라우저로 열면 됩니다. 데이터가 파일 안에 들어 있어 서버·DB가 필요 없고, 배경 지도만 인터넷 연결이 필요합니다. 아래는 위에서 아래로 스크롤하며 보는 순서 그대로입니다.
 
 ### 3-0. 맨 위 — 비교 구간 슬라이더
 
@@ -258,7 +260,7 @@ python -m venv .venv
 | 파일 | 설명 |
 | --- | --- |
 | [REPORT.md](REPORT.md) | 분석 질문·방법·결과·인사이트·결론·한계 (숫자의 배경 전부) |
-| [interactive-dashboard.html](interactive-dashboard.html) | 기간·지역·업종·행정동을 바꿔 보는 단일 파일 대시보드 |
+| [interactive-dashboard.html](interactive-dashboard.html) | 기간·지역·업종·행정동을 바꿔 보는 단일 파일 대시보드 ([라이브](https://frost0313z.github.io/daejeon-commercial-analysis/)) |
 | [analysis.ipynb](analysis.ipynb) | 기초 시계열 전처리·검증 코드와 실행 결과 |
 | [ANALYSIS_PLAN.md](ANALYSIS_PLAN.md) | 분석 설계와 지표 정의 |
 
