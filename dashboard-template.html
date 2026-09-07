@@ -22,6 +22,7 @@
     .period-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 0 2px;margin:0 0 16px;border-bottom:1px solid var(--line)}.period-sticky .notice{margin-top:2px}
     .info-hint{position:relative;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);align-self:center}.info-icon{width:18px;height:18px;border-radius:50%;border:1px solid var(--muted);background:none;color:var(--muted);font-size:11px;font-weight:700;line-height:1;cursor:help;display:inline-flex;align-items:center;justify-content:center;padding:0}.info-icon:hover,.info-icon:focus-visible,.info-hint.show .info-icon{border-color:var(--blue);color:var(--blue)}.info-callout{position:absolute;left:0;top:calc(100% + 8px);z-index:900;width:300px;max-width:80vw;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:0 10px 28px rgba(0,0,0,.4);visibility:hidden;opacity:0;transform:translateY(-4px);transition:opacity .12s,transform .12s;pointer-events:none}.info-hint:hover .info-callout,.info-hint:focus-within .info-callout,.info-hint.show .info-callout{visibility:visible;opacity:1;transform:translateY(0);pointer-events:auto}.info-callout{display:grid;gap:9px}.info-callout div{font-size:12.5px;line-height:1.55;color:var(--text)}.info-callout strong{display:block;color:var(--blue);margin-bottom:2px}
     .controls.fill{flex-wrap:nowrap}.controls.fill label{flex:1 1 0;min-width:0}.controls.fill select{width:100%}@media(max-width:700px){.controls.fill{flex-wrap:wrap}.controls.fill label{flex:1 1 160px}}
+    .panel-head{display:flex;align-items:center;gap:8px;margin-bottom:16px}.panel-head h2{margin:0}
   </style>
 </head>
 <body>
@@ -99,7 +100,17 @@
     <p class="foot">가로축은 위 슬라이더에서 고른 구간의 업소 수 증감률, 세로축은 2025년 3월에 있던 업소가 같은 번호로 남아 있는 비율(잔존율)입니다. 점 크기는 순증·순감 규모, 점선은 증감률 0%와 잔존율 중앙값입니다. 오른쪽 위(부흥)일수록 업소가 늘고 기존 업소도 잘 남는 상권, 왼쪽 아래(위축)일수록 업소가 줄고 교체도 빠른 상권입니다. 지도의 자치구 선택이 반영됩니다.</p>
   </section>
   <section class="panel">
-    <h2 id="turnoverTitle">행정동 점포 교체율</h2>
+    <div class="panel-head">
+      <h2 id="turnoverTitle">행정동 점포 교체율</h2>
+      <span class="info-hint"><button type="button" class="info-icon" aria-label="교체율 설명 보기" aria-describedby="turnoverInfoCallout">?</button>
+        <div class="info-callout" id="turnoverInfoCallout" role="tooltip">
+          <div><strong>교체율이란</strong>선택 구간에 그 동에서 사라진 업소번호(이탈)와 새로 생긴 업소번호(진입)를 모두 더해, 구간 시작 시점의 업소 수로 나눈 값입니다.</div>
+          <div><strong>왜 보나</strong>폐업한 자리에 같은 업종의 다른 가게가 들어오면 업소번호가 새로 발급됩니다. 순 업소 수는 그대로여도 폐업·창업이 함께 일어난 것이라, 증감률만 보면 이런 물갈이가 보이지 않습니다.</div>
+          <div><strong>읽는 법</strong>세로로 높을수록 진입·이탈이 활발합니다. 가로축(순증감률)이 0 근처인데 위쪽이면 겉으로는 제자리지만 안에서 점포가 크게 바뀐 상권입니다.</div>
+          <div><strong>주의</strong>같은 자리가 구간 안에서 두 번 갈리면 두 번 세므로 100%를 넘을 수 있습니다. 개·폐업 신고일이 아니라 업소번호의 등장·소멸로 추정한 값이라 상권 간 상대 비교로 읽어야 합니다.</div>
+        </div>
+      </span>
+    </div>
     <div class="growth-summary" id="turnoverSummary"></div>
     <svg id="turnoverMap" viewBox="0 0 640 400" role="img" aria-label="행정동 순증감률과 점포 교체율 산점도"></svg>
     <div class="scatter-legend" id="turnoverMapLegend"></div>
@@ -555,11 +566,11 @@ barDongQuery.addEventListener('input',filterBarDongList);
 [barSort,barDir].forEach(s=>s.addEventListener('change',drawBars));
 periodStart.addEventListener('input',()=>{if(+periodStart.value>+periodEnd.value)periodStart.value=periodEnd.value;updatePeriod()});
 periodEnd.addEventListener('input',()=>{if(+periodEnd.value<+periodStart.value)periodEnd.value=periodStart.value;updatePeriod()});
-const infoHint=document.querySelector('.info-hint');
-if(infoHint){
-  infoHint.querySelector('.info-icon').addEventListener('click',e=>{e.preventDefault();infoHint.classList.toggle('show')});
-  document.addEventListener('click',e=>{if(!infoHint.contains(e.target))infoHint.classList.remove('show')});
-}
+const infoHints=[...document.querySelectorAll('.info-hint')];
+infoHints.forEach(h=>h.querySelector('.info-icon').addEventListener('click',e=>{
+  e.preventDefault();infoHints.forEach(o=>{if(o!==h)o.classList.remove('show')});h.classList.toggle('show');
+}));
+document.addEventListener('click',e=>{if(!e.target.closest('.info-hint'))infoHints.forEach(h=>h.classList.remove('show'))});
 populateBarDistrict();populatePeriods();updatePeriod();populateSeries();initMap();
 </script>
 </body>
