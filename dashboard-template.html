@@ -28,7 +28,7 @@
 <main>
   <header>
     <h1>대전 상권 변화 대시보드</h1>
-    <p class="sub" id="periodSub">2024년 3월 ~ 2026년 6월 · 대전 5개 자치구 82개 행정동 · 등록 업소 수 기준</p>
+    <p class="sub" id="periodSub">2025년 3월 ~ 2026년 6월 · 대전 5개 자치구 82개 행정동 · 등록 업소 수 기준</p>
   </header>
   <div class="period-sticky" id="periodSticky">
     <div class="period-slider">
@@ -44,7 +44,7 @@
     </div>
     <div class="period-readout" id="periodReadout"></div>
   </div>
-  <div class="notice">아래 핵심 지표·증감 그래프·히트맵·상세 결과는 위 슬라이더에서 고른 두 시점의 비교입니다. 기본값은 수집범위가 안정된 2025-03 ~ 2026-06 구간이며, 두 손잡이를 각각 드래그해 조정할 수 있습니다. 슬라이더는 스크롤해도 상단에 고정됩니다.</div>
+  <div class="notice">아래 핵심 지표·증감 그래프·히트맵·상세 결과는 위 슬라이더에서 고른 두 시점의 비교입니다. 2024년 말 수집범위 단절 이전은 같은 기준으로 볼 수 없어, 슬라이더는 이후로 안정된 2025-03 ~ 2026-06 6개 시점만 다룹니다. 두 손잡이를 각각 드래그해 시작·종료 시점을 조정할 수 있고, 슬라이더는 스크롤해도 상단에 고정됩니다.</div>
   <section class="stats" aria-label="핵심 지표">
     <div class="card"><div class="label">시작 업소 수</div><div class="value" id="startValue"></div></div>
     <div class="card"><div class="label">종료 업소 수</div><div class="value" id="endValue"></div></div>
@@ -73,7 +73,7 @@
         <div class="info-callout" id="metricInfoCallout" role="tooltip">
           <div><strong>① 공급 밀도</strong>그 동 주민 1,000명당 업소 수입니다. 숫자가 클수록 업소가 촘촘하게 몰려 있다는 뜻입니다.</div>
           <div><strong>② HHI(업종 집중도)</strong>0~1 사이 값으로, 0에 가까울수록 다양한 업종이 섞여 있고 1에 가까울수록 음식점처럼 특정 업종 하나가 그 동 상권 대부분을 차지한다는 뜻입니다.</div>
-          <div><strong>③ 고정 코호트 잔존율</strong>2024년 3월에 있던 업소 중 지금도 같은 번호로 남아 있는 비율입니다. 70%면 그때 업소 10곳 중 7곳이 아직 있다는 뜻이고, 낮을수록 업소가 자주 바뀌는 동네라는 신호입니다.</div>
+          <div><strong>③ 고정 코호트 잔존율</strong>2025년 3월에 있던 업소 중 지금도 같은 번호로 남아 있는 비율입니다. 70%면 그때 업소 10곳 중 7곳이 아직 있다는 뜻이고, 낮을수록 업소가 자주 바뀌는 동네라는 신호입니다.</div>
         </div>
       </span>
     </div>
@@ -96,7 +96,7 @@
     <div class="growth-summary" id="growthSummary"></div>
     <svg id="growthMap" viewBox="0 0 640 400" role="img" aria-label="행정동 업소 수 증감률과 잔존율 산점도"></svg>
     <div class="scatter-legend" id="growthMapLegend"></div>
-    <p class="foot">가로축은 위 슬라이더에서 고른 구간의 업소 수 증감률, 세로축은 2024년 3월에 있던 업소가 같은 번호로 남아 있는 비율(잔존율)입니다. 점 크기는 순증·순감 규모, 점선은 증감률 0%와 잔존율 중앙값입니다. 오른쪽 위(부흥)일수록 업소가 늘고 기존 업소도 잘 남는 상권, 왼쪽 아래(위축)일수록 업소가 줄고 교체도 빠른 상권입니다. 지도의 자치구 선택이 반영됩니다.</p>
+    <p class="foot">가로축은 위 슬라이더에서 고른 구간의 업소 수 증감률, 세로축은 2025년 3월에 있던 업소가 같은 번호로 남아 있는 비율(잔존율)입니다. 점 크기는 순증·순감 규모, 점선은 증감률 0%와 잔존율 중앙값입니다. 오른쪽 위(부흥)일수록 업소가 늘고 기존 업소도 잘 남는 상권, 왼쪽 아래(위축)일수록 업소가 줄고 교체도 빠른 상권입니다. 지도의 자치구 선택이 반영됩니다.</p>
   </section>
   <section class="panel">
     <h2>관측 시점별 업소 수</h2>
@@ -112,7 +112,7 @@
         <svg id="lineChart" viewBox="0 0 720 360" role="img" aria-label="관측 시점별 업소 수 선 그래프"></svg>
       </div>
     </div>
-    <p class="foot">2024년 3월부터 2026년 6월까지 10개 관측 시점을 모두 표시합니다. 자치구·업종·행정동을 선택하면 여러 항목을 겹쳐 비교할 수 있습니다(행정동은 82개라 자치구를 먼저 골라야 합니다). 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
+    <p class="foot">2025년 3월부터 2026년 6월까지 6개 관측 시점을 표시합니다. 자치구·업종·행정동을 선택하면 여러 항목을 겹쳐 비교할 수 있습니다(행정동은 82개라 자치구를 먼저 골라야 합니다). 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
   </section>
   <section class="panel">
     <h2 id="barTitle">자치구별 증감</h2>

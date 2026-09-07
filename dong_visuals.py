@@ -7,7 +7,7 @@
   images/09_dong_supply_density.png   인구 대비 공급 밀도 상·하위 15개 동
   images/10_dong_lq_heatmap.png       행정동 × 업종 입지계수(LQ) 히트맵
   images/11_diversity_vs_density.png  다양성(HHI) × 공급밀도 4분면
-  images/12_dong_survival.png         행정동별 2024-03 고정 코호트 잔존율
+  images/12_dong_survival.png         행정동별 2025-03 고정 코호트 잔존율
 """
 
 from __future__ import annotations
@@ -201,13 +201,13 @@ def draw_survival(rows: list[dict]) -> None:
     ax.set_xlim(min(values) - 3, 100)
     ax.grid(axis="x", color="#e4e9ee", linewidth=1)
     ax.set_axisbelow(True)
-    ax.set_xlabel("2024-03 기준 코호트 잔존율(%)")
+    ax.set_xlabel("2025-03 기준 코호트 잔존율(%)")
     for yi, value, row in zip(y, values, selected):
         ax.text(value + .3, yi, f"{value:.1f}% (n={row['baseline_stores']:,})",
                 va="center", fontsize=8)
-    ax.set_title("행정동별 고정 코호트 잔존율 — 2024년 3월 → 2026년 3월",
+    ax.set_title("행정동별 고정 코호트 잔존율 — 2025년 3월 → 2026년 3월",
                  fontsize=12.5, loc="left", pad=12)
-    fig.text(.02, .01, "2024년 3월에 수록된 업소를 최초 행정동별로 고정해 추적했다. 기준 업소 100개 이상인 행정동만 순위에 포함했다.",
+    fig.text(.02, .01, "2025년 3월에 수록된 업소를 최초 행정동별로 고정해 추적했다. 기준 업소 100개 이상인 행정동만 순위에 포함했다.",
              fontsize=8.5, color="#687582")
     fig.tight_layout(rect=(0, .035, 1, 1))
     save(fig, "12_dong_survival.png")

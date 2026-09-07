@@ -2,15 +2,19 @@
 
 업종 분류는 analysis.ipynb가 만든 normalized_store_records.csv.gz의 정규화 결과를
 그대로 이어받아 리포트 전체에서 같은 업종명을 쓴다. 행정동은 원본 CSV에서 읽어 붙이고,
-행정안전부 주민등록 인구(월별 다운로드분)에서 상가 데이터의 10개 관측 시점과
+행정안전부 주민등록 인구(월별 다운로드분)에서 상가 데이터의 관측 시점과
 정확히 일치하는 월말 파일을 골라 배후수요 지표의 분모로 쓴다.
+
+2024년 말 수집범위 확대(REPORT 4.3)로 2024-09 이전·이후를 같은 기준으로 볼 수 없어,
+분석은 단절 이후로 안정된 6개 시점(2025-03~2026-06)만 사용한다. 원본 CSV는 10개
+시점을 그대로 두고 이 스크립트가 읽는 단계에서 걸러낸다.
 
 산출물
   data/processed/dong_panel.csv       행정동 × 업종 × 시점 패널
   data/processed/dong_population.csv  행정동 × 시점 인구·연령 구조
   data/processed/dong_indicators.csv  행정동별 LQ·HHI·공급밀도·인구구조(2026-03 단면)
-  data/processed/dong_indicators_timeseries.csv  행정동 지표 10개 시점
-  data/processed/dong_survival.csv    2024-03 고정 코호트의 행정동별 잔존율
+  data/processed/dong_indicators_timeseries.csv  행정동 지표 6개 시점
+  data/processed/dong_survival.csv    2025-03 고정 코호트의 행정동별 잔존율
   data/processed/category_dong_competition.csv  업종별 행정동 창업 경쟁 강도(2026-03 단면)
 """
 
@@ -28,8 +32,9 @@ RECORDS = OUT / "normalized_store_records.csv.gz"
 TIMESERIES = OUT / "daejeon_timeseries.csv"
 POP_DIR = ROOT / "01. 인구 데이터"
 RAW_PATTERN = "*대전_20[0-9][0-9][0-9][0-9].csv"
-STAMPS = ["202403", "202406", "202409", "202412", "202503",
-          "202506", "202510", "202512", "202603", "202606"]
+# 2024년 말 수집범위 단절(REPORT 4.3) 이후로 안정된 6개 시점만 분석에 쓴다.
+STAMPS = ["202503", "202506", "202510", "202512", "202603", "202606"]
+PERIODS = {f"{s[:4]}-{s[4:]}-01" for s in STAMPS}
 FOCUS = "2026-03-01"  # 주 분석 단면. 변화 비교 구간은 2025-03~2026-06(REPORT 5.7)
 STAMP_IN_NAME = re.compile(r"_(20\d{4})\.csv$")
 AGE_COL = re.compile(r"^(\d+)세(?:남자|여자)$")
@@ -42,7 +47,7 @@ def read_gzip_records() -> dict[tuple[str, str], str]:
 
     with gzip.open(RECORDS, "rt", encoding="utf-8-sig", newline="") as f:
         return {(r["period"], r["상가업소번호"]): r["normalized_major_name"]
-                for r in csv.DictReader(f)}
+                for r in csv.DictReader(f) if r["period"] in PERIODS}
 
 
 def read_dong() -> dict[tuple[str, str], tuple[str, str, str]]:
@@ -53,6 +58,8 @@ def read_dong() -> dict[tuple[str, str], tuple[str, str, str]]:
             continue
         stamp = STAMP_IN_NAME.search(path.name).group(1)
         period = f"{stamp[:4]}-{stamp[4:]}-01"
+        if period not in PERIODS:
+            continue
         with path.open(encoding="utf-8-sig", newline="") as f:
             for r in csv.DictReader(f):
                 result[(period, r["상가업소번호"])] = (
@@ -85,8 +92,8 @@ def build_panel(categories: dict, dongs: dict) -> tuple[list[dict], dict]:
 
 
 def build_survival(dongs: dict, names: dict[str, tuple[str, str]]) -> list[dict]:
-    """2024-03 수록 업소를 기준 코호트로 고정하고 최초 행정동별 잔존율을 센다."""
-    base_period = "2024-03-01"
+    """2025-03 수록 업소를 기준 코호트로 고정하고 최초 행정동별 잔존율을 센다."""
+    base_period = "2025-03-01"
     periods = sorted({period for period, _ in dongs})
     present = {period: {store_id for p, store_id in dongs if p == period}
                for period in periods}
@@ -115,7 +122,8 @@ def verify(panel: list[dict]) -> None:
     theirs: dict[tuple[str, str], int] = Counter()
     with TIMESERIES.open(encoding="utf-8-sig", newline="") as f:
         for r in csv.DictReader(f):
-            theirs[(r["period"], r["district"])] += int(float(r["store_count"]))
+            if r["period"] in PERIODS:
+                theirs[(r["period"], r["district"])] += int(float(r["store_count"]))
     assert mine == theirs, "행정동 합계가 자치구 패널과 어긋납니다"
     print(f"검증 통과: {len(mine)}개 (시점×자치구) 조합이 기존 패널과 일치")
 
@@ -127,7 +135,7 @@ def verify(panel: list[dict]) -> None:
 def population_file(period: str) -> Path:
     """상가 데이터 관측월의 마지막 날짜에 해당하는 인구 파일을 찾는다.
 
-    2024-01~2026-07을 월별로 받아 두었으므로 10개 관측 시점 전부 정확히
+    2024-01~2026-07을 월별로 받아 두었으므로 6개 관측 시점 전부 정확히
     일치하는 월말 파일이 존재한다. 분기 보간은 필요 없다.
     """
     year, month = int(period[:4]), int(period[5:7])
@@ -317,7 +325,7 @@ def main() -> None:
 
     periods = sorted({r["period"] for r in panel})
     category_count = len({r["category"] for r in panel})
-    assert len(panel) == len(periods) * len(names) * category_count == 8200
+    assert len(panel) == len(periods) * len(names) * category_count == 4920
     print(f"균형 패널 {len(panel):,}행 · 행정동 {len(names)}개 · "
           f"업종 {category_count}개 · 시점 {len(periods)}개")
 

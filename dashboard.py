@@ -173,7 +173,9 @@ def dong_metrics() -> dict[str, list[dict]]:
 
 
 def main() -> None:
-    panel = read_panel()
+    # 2024년 말 수집범위 단절(REPORT 4.3) 이전은 같은 기준으로 비교할 수 없어
+    # 대시보드도 단절 이후로 안정된 6개 시점(START 이후)만 내보낸다.
+    panel = [r for r in read_panel() if r["period"] >= START]
     totals: dict[str, int] = defaultdict(int)
     for row in panel:
         totals[row["period"]] += int(float(row["store_count"]))
@@ -195,8 +197,8 @@ def main() -> None:
     write_csv("reliable_period_category_growth.csv", category_growth)
     write_csv("reliable_period_combination_growth.csv", combination)
 
-    # 대시보드는 사용자가 임의의 두 시점을 골라 비교할 수 있어야 하므로,
-    # 신뢰 구간(START~END)에 국한하지 않고 전체 10개 시점을 그대로 내보낸다.
+    # 사용자가 임의의 두 시점을 골라 비교하되, 비교 대상은 수집범위가 안정된
+    # 2025-03~2026-06 6개 시점으로 한정한다(2024년 데이터는 위에서 이미 제외).
     full_districts = aggregate(panel, "district")
     full_categories = aggregate(panel, "category")
     full_periods = sorted({r["period"] for r in panel})
@@ -214,7 +216,7 @@ def main() -> None:
     assert all(sum(v.get(p, 0) for v in full_dongs.values()) == full_city[p] for p in full_periods)
     dong_district = {name: name.split(" ", 1)[0] for name in full_dongs}
 
-    map_points = spatial_grids()
+    map_points = {p: v for p, v in spatial_grids().items() if p >= START}
     assert END in map_points
     for period, points in map_points.items():
         assert sum(r["count"] for r in points) == totals[period], period
