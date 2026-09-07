@@ -22,6 +22,7 @@
 5. 같은 업소번호가 오래 남아 있는 행정동은 어디인가?
 6. 특정 업종으로 창업한다면 어느 행정동이 경쟁이 적고, 어디가 이미 포화 상태인가?
 7. 2025-03~2026-06에 점포 공급이 늘어나는 상권과 정체·고교체 상태인 상권은 어디인가?
+8. 순 업소 수는 그대로여도 폐업·창업이 맞물려 점포가 자주 바뀌는 상권은 어디인가?
 
 > 2024년 말 수집범위 단절(REPORT 4.3) 때문에 2024년 4개 시점은 지표·변화 분석·대시보드에서 제외하고, 분석은 안정된 2025-03~2026-06 6개 시점만 사용합니다.
 
@@ -53,6 +54,7 @@
 - **증감 막대그래프·상세 결과:** 자치구·업종은 목록에서, 행정동은 자치구를 고른 뒤 검색해 개별 선택하고 증감 순으로 정렬해 확인
 - **자치구 × 업종 증감률 히트맵:** 선택한 기간 50개 조합의 증감을 색상과 툴팁으로 확인
 - **상권 성장·위축 진단:** 선택 구간의 증감률 × 잔존율 산점도와 부흥·정체 상위 요약
+- **점포 교체율:** 선택 구간의 순증감률 × 교체율(진입+이탈) 산점도. 순증은 0 근처인데 교체율이 높으면 폐업·창업이 맞물린 상권
 - **관측 시점 슬라이더:** 2025년 3월~2026년 6월의 6개 시점 전환
 - **원형 위치 분포:** 자치구, 업종, 낮음·중간·높음 밀도 필터
 - **자치구 경계:** 선택한 영역을 강조하고 자동 확대. 자치구를 고르면 그 안의 행정동도 골라 해당 동으로 줌인·강조 가능
@@ -168,6 +170,7 @@ python -m venv .venv
 | [dong_indicators.csv](data/processed/dong_indicators.csv) | 2026년 3월 공급 밀도·LQ·HHI·잔존율 |
 | [dong_indicators_timeseries.csv](data/processed/dong_indicators_timeseries.csv) | 행정동 지표 6개 시점 |
 | [dong_survival.csv](data/processed/dong_survival.csv) | 행정동별 고정 코호트 잔존율 시계열 |
+| [dong_turnover.csv](data/processed/dong_turnover.csv) | 행정동별 회차 간 업소번호 진입·이탈(교체율) |
 | [category_dong_competition.csv](data/processed/category_dong_competition.csv) | 업종별 행정동 창업 경쟁 강도(인구 1,000명당 동종 점포 수·LQ, 2026년 3월) |
 | [population_category_correlation.csv](data/processed/population_category_correlation.csv) | 인구 구조와 업종 LQ 상관계수 |
 | [daejeon_dong_boundaries.geojson](data/processed/daejeon_dong_boundaries.geojson) | 82개 행정동 경계와 조인 코드 |

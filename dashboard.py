@@ -172,6 +172,27 @@ def dong_metrics() -> dict[str, list[dict]]:
     return dict(grouped)
 
 
+def dong_turnover() -> dict:
+    """행정동별 회차 간 진입·이탈(commercial_analysis.py 산출물)을 대시보드용으로 묶는다.
+
+    시점 쌍 목록과 행정동별 이탈·진입 배열을 시간 순으로 정렬해 내보내면,
+    대시보드가 슬라이더로 고른 임의 구간의 합을 그 자리에서 계산할 수 있다.
+    """
+    transitions: list[tuple[str, str]] = []
+    by_dong: dict[str, dict[str, list[int]]] = {}
+    with (OUT / "dong_turnover.csv").open(encoding="utf-8-sig", newline="") as f:
+        for r in csv.DictReader(f):
+            pair = (r["from_period"], r["to_period"])
+            if pair not in transitions:
+                transitions.append(pair)
+            name = f'{r["district"]} {r["dong"]}'
+            slot = by_dong.setdefault(name, {"left": [], "entered": []})
+            slot["left"].append(int(r["left"]))
+            slot["entered"].append(int(r["entered"]))
+    assert all(len(v["left"]) == len(transitions) for v in by_dong.values())
+    return {"transitions": [list(p) for p in transitions], "byDong": by_dong}
+
+
 def main() -> None:
     # 2024년 말 수집범위 단절(REPORT 4.3) 이전은 같은 기준으로 비교할 수 없어
     # 대시보드도 단절 이후로 안정된 6개 시점(START 이후)만 내보낸다.
@@ -228,13 +249,17 @@ def main() -> None:
     assert len(dong_codes) == 82
     assert all({r["dong_code"] for r in rows} == dong_codes for rows in metrics.values())
     assert set(metrics) == set(map_points)
+    turnover = dong_turnover()
+    assert set(turnover["byDong"]) == set(full_dongs)
+    assert len(turnover["transitions"]) == len(full_periods) - 1
     payload = {"periods": full_periods, "city": full_city, "districts": full_districts,
                "categories": full_categories, "combinations": combinations,
                "dongs": full_dongs, "dongDistrict": dong_district,
                "reliableStart": START, "reliableEnd": END,
                "mapPeriods": sorted(map_points),
                "mapPoints": map_points, "boundaries": boundaries,
-               "dongBoundaries": dong_boundaries, "dongMetrics": metrics}
+               "dongBoundaries": dong_boundaries, "dongMetrics": metrics,
+               "dongTurnover": turnover}
     template = (ROOT / "dashboard-template.html").read_text(encoding="utf-8")
     html = template.replace("__DASHBOARD_DATA__", json.dumps(payload, ensure_ascii=False))
     (ROOT / "interactive-dashboard.html").write_text(html, encoding="utf-8")

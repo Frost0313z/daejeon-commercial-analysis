@@ -99,6 +99,13 @@
     <p class="foot">가로축은 위 슬라이더에서 고른 구간의 업소 수 증감률, 세로축은 2025년 3월에 있던 업소가 같은 번호로 남아 있는 비율(잔존율)입니다. 점 크기는 순증·순감 규모, 점선은 증감률 0%와 잔존율 중앙값입니다. 오른쪽 위(부흥)일수록 업소가 늘고 기존 업소도 잘 남는 상권, 왼쪽 아래(위축)일수록 업소가 줄고 교체도 빠른 상권입니다. 지도의 자치구 선택이 반영됩니다.</p>
   </section>
   <section class="panel">
+    <h2 id="turnoverTitle">행정동 점포 교체율</h2>
+    <div class="growth-summary" id="turnoverSummary"></div>
+    <svg id="turnoverMap" viewBox="0 0 640 400" role="img" aria-label="행정동 순증감률과 점포 교체율 산점도"></svg>
+    <div class="scatter-legend" id="turnoverMapLegend"></div>
+    <p class="foot">폐업 자리에 같은 업종의 다른 업소가 들어오면 업소번호가 새로 발급되므로, 순 업소 수가 그대로여도 폐업(이탈)과 창업(진입)이 함께 일어납니다. 세로축 <b>교체율</b>은 선택 구간의 회차별 (진입+이탈) 건수 합을 시작 업소 수로 나눈 값으로, 같은 자리가 두 번 갈리면 두 번 세므로 100%를 넘을 수 있습니다. 가로축은 순증감률입니다. 세로로 높을수록 물갈이가 심하고, 가로로 0 근처인데 위쪽이면 <b>폐업·창업이 맞물려 겉으로는 제자리인 상권</b>입니다. 성장 진단이 "기존 업소가 남았나(잔존율)"를 봤다면 이 그래프는 "얼마나 갈렸나"를 봅니다. 지도의 자치구 선택이 반영됩니다.</p>
+  </section>
+  <section class="panel">
     <h2>관측 시점별 업소 수</h2>
     <div class="chart-split">
       <div class="chart-side">
@@ -142,7 +149,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const data=__DASHBOARD_DATA__,fmt=n=>n.toLocaleString('ko-KR'),pct=n=>`${n>=0?'+':''}${n.toFixed(2)}%`;
-const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesChecks=document.getElementById('seriesChecks'),seriesDongDistrict=document.getElementById('seriesDongDistrict'),seriesDongDistrictLabel=document.getElementById('seriesDongDistrictLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barDistrict=document.getElementById('barDistrict'),barDistrictLabel=document.getElementById('barDistrictLabel'),barSort=document.getElementById('barSort'),barDir=document.getElementById('barDir'),barDongQuery=document.getElementById('barDongQuery'),barDongQueryLabel=document.getElementById('barDongQueryLabel'),barDongChecks=document.getElementById('barDongChecks'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapDong=document.getElementById('mapDong'),mapDongLabel=document.getElementById('mapDongLabel'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend'),heatmapChart=document.getElementById('heatmapChart'),heatmapLegend=document.getElementById('heatmapLegend'),heatmapTitle=document.getElementById('heatmapTitle'),dongScatter=document.getElementById('dongScatter'),scatterTitle=document.getElementById('scatterTitle'),scatterLegend=document.getElementById('scatterLegend'),growthMap=document.getElementById('growthMap'),growthMapTitle=document.getElementById('growthMapTitle'),growthMapLegend=document.getElementById('growthMapLegend'),growthSummary=document.getElementById('growthSummary'),periodStart=document.getElementById('periodStart'),periodEnd=document.getElementById('periodEnd'),periodFill=document.getElementById('periodFill'),periodTicks=document.getElementById('periodTicks'),periodSub=document.getElementById('periodSub'),periodReadout=document.getElementById('periodReadout'),colStart=document.getElementById('colStart'),colEnd=document.getElementById('colEnd');
+const startValue=document.getElementById('startValue'),endValue=document.getElementById('endValue'),changeValue=document.getElementById('changeValue'),growthValue=document.getElementById('growthValue'),seriesType=document.getElementById('seriesType'),seriesChecks=document.getElementById('seriesChecks'),seriesDongDistrict=document.getElementById('seriesDongDistrict'),seriesDongDistrictLabel=document.getElementById('seriesDongDistrictLabel'),lineChart=document.getElementById('lineChart'),barType=document.getElementById('barType'),barDistrict=document.getElementById('barDistrict'),barDistrictLabel=document.getElementById('barDistrictLabel'),barSort=document.getElementById('barSort'),barDir=document.getElementById('barDir'),barDongQuery=document.getElementById('barDongQuery'),barDongQueryLabel=document.getElementById('barDongQueryLabel'),barDongChecks=document.getElementById('barDongChecks'),barChart=document.getElementById('barChart'),barTitle=document.getElementById('barTitle'),tableTitle=document.getElementById('tableTitle'),resultRows=document.getElementById('resultRows'),mapDistrict=document.getElementById('mapDistrict'),mapDong=document.getElementById('mapDong'),mapDongLabel=document.getElementById('mapDongLabel'),mapCategory=document.getElementById('mapCategory'),mapTitle=document.getElementById('mapTitle'),mapPeriod=document.getElementById('mapPeriod'),mapPeriodLabel=document.getElementById('mapPeriodLabel'),mapPeriodTicks=document.getElementById('mapPeriodTicks'),dongMetric=document.getElementById('dongMetric'),dongLegend=document.getElementById('dongLegend'),heatmapChart=document.getElementById('heatmapChart'),heatmapLegend=document.getElementById('heatmapLegend'),heatmapTitle=document.getElementById('heatmapTitle'),dongScatter=document.getElementById('dongScatter'),scatterTitle=document.getElementById('scatterTitle'),scatterLegend=document.getElementById('scatterLegend'),growthMap=document.getElementById('growthMap'),growthMapTitle=document.getElementById('growthMapTitle'),growthMapLegend=document.getElementById('growthMapLegend'),growthSummary=document.getElementById('growthSummary'),turnoverMap=document.getElementById('turnoverMap'),turnoverTitle=document.getElementById('turnoverTitle'),turnoverMapLegend=document.getElementById('turnoverMapLegend'),turnoverSummary=document.getElementById('turnoverSummary'),periodStart=document.getElementById('periodStart'),periodEnd=document.getElementById('periodEnd'),periodFill=document.getElementById('periodFill'),periodTicks=document.getElementById('periodTicks'),periodSub=document.getElementById('periodSub'),periodReadout=document.getElementById('periodReadout'),colStart=document.getElementById('colStart'),colEnd=document.getElementById('colEnd');
 const DISTRICT_PALETTE={'동구':'#185b79','중구':'#bb5b28','서구':'#5f793e','유성구':'#7b5596','대덕구':'#747474'};
 const CATEGORY_PALETTE=['#4c8dff','#f0625f','#22c3a6','#f59e0b','#a78bfa','#22d3ee','#f472b6','#a3e635','#fb923c','#94a3b8'];
 const shortLabel=p=>p.slice(0,7);
@@ -184,7 +191,7 @@ function updatePeriod(){
   heatmapTitle.textContent=`자치구 × 업종 증감률 (${shortLabel(start)} → ${shortLabel(end)})`;
   districtGrowth=growthRows(data.districts,start,end);categoryGrowth=growthRows(data.categories,start,end);dongGrowth=growthRows(data.dongs,start,end);combinationGrowth=combinationRows(start,end);
   dongDiagCache=computeDongDiag();
-  drawBars();drawHeatmap();drawDongScatter();drawGrowthMap();
+  drawBars();drawHeatmap();drawDongScatter();drawGrowthMap();drawTurnoverMap();
 }
 let dongDiagCache=[];
 function computeDongDiag(){
@@ -240,6 +247,65 @@ function drawGrowthMap(){
     svg.append(c);
   });
   if(growthMapLegend)growthMapLegend.innerHTML=Object.entries(DISTRICT_PALETTE).map(([dd,cc])=>`<span><i style="background:${cc}"></i>${dd}</span>`).join('');
+}
+function computeDongTurnover(){
+  const t=data.dongTurnover;if(!t)return [];
+  const si=data.periods.indexOf(currentStart),ei=data.periods.indexOf(currentEnd);
+  const idx=t.transitions.map((pair,k)=>k).filter(k=>{
+    const a=data.periods.indexOf(t.transitions[k][0]),b=data.periods.indexOf(t.transitions[k][1]);
+    return a>=si&&b<=ei;
+  });
+  return Object.keys(data.dongs).map(name=>{
+    const base=data.dongs[name][currentStart]||0,end=data.dongs[name][currentEnd]||0;
+    const s=t.byDong[name]||{left:[],entered:[]};
+    let left=0,entered=0;idx.forEach(k=>{left+=s.left[k]||0;entered+=s.entered[k]||0});
+    return {name,district:data.dongDistrict[name],base,end,left,entered,net:end-base,
+      exitPct:base>0?left/base*100:0,entryPct:base>0?entered/base*100:0,
+      turnoverPct:base>0?(left+entered)/base*100:0,netPct:base>0?(end-base)/base*100:0,
+      spans:idx.length};
+  });
+}
+function drawTurnoverMap(){
+  if(!turnoverMap||!data.dongTurnover)return;
+  const svg=turnoverMap;svg.innerHTML='';
+  turnoverTitle.textContent=`행정동 점포 교체율 (${shortLabel(currentStart)} → ${shortLabel(currentEnd)})`;
+  const all=computeDongTurnover();
+  if(!all.length||!all[0].spans){
+    turnoverSummary.innerHTML='<div>선택 구간에 회차 전이가 없습니다. 시작·종료 시점을 다르게 골라 주세요.</div>';
+    if(turnoverMapLegend)turnoverMapLegend.innerHTML='';return;
+  }
+  const rows=all.filter(d=>d.base>0&&(!mapDistrict.value||d.district===mapDistrict.value));
+  if(!rows.length)return;
+  const byTurn=[...rows].sort((a,b)=>b.turnoverPct-a.turnoverPct);
+  const li=d=>`<li>${d.name}<span>교체 ${d.turnoverPct.toFixed(0)}% · 순증 ${d.netPct>=0?'+':''}${d.netPct.toFixed(1)}%</span></li>`;
+  turnoverSummary.innerHTML=`<div><strong>교체율 상위 3</strong><ol>${byTurn.slice(0,3).map(li).join('')}</ol></div>`+
+    `<div><strong>가장 안정적 3</strong><ol>${byTurn.slice(-3).reverse().map(li).join('')}</ol></div>`;
+  const W=640,H=400,m={l:64,r:20,t:22,b:48};
+  const xa=rows.map(d=>d.netPct).sort((a,b)=>a-b),ya=rows.map(d=>d.turnoverPct).sort((a,b)=>a-b);
+  const q=(a,p)=>a[Math.min(a.length-1,Math.max(0,Math.round((a.length-1)*p)))];
+  const xlo=Math.min(-5,q(xa,.02)),xhi=Math.max(5,q(xa,.98)),ylo=Math.max(0,ya[0]-5),yhi=q(ya,.98)+5,medY=q(ya,.5);
+  const x=v=>m.l+(Math.max(xlo,Math.min(xhi,v))-xlo)/(xhi-xlo)*(W-m.l-m.r),y=v=>m.t+(yhi-Math.max(ylo,Math.min(yhi,v)))/(yhi-ylo)*(H-m.t-m.b);
+  const x0=xlo<0&&xhi>0?x(0):m.l,y0=y(medY);
+  svg.append(el('rect',{x:m.l,y:m.t,width:W-m.r-m.l,height:y0-m.t,fill:'var(--red)',opacity:.05}));
+  for(let i=0;i<=4;i++){const Y=m.t+i*(H-m.t-m.b)/4,v=yhi-(yhi-ylo)*i/4;svg.append(el('line',{x1:m.l,x2:W-m.r,y1:Y,y2:Y,class:'grid'}));svg.append(el('text',{x:m.l-8,y:Y+4,'text-anchor':'end',fill:'var(--muted)','font-size':11},v.toFixed(0)))}
+  for(let i=0;i<=4;i++){const X=m.l+i*(W-m.l-m.r)/4,v=xlo+(xhi-xlo)*i/4;svg.append(el('text',{x:X,y:H-m.b+16,'text-anchor':'middle',fill:'var(--muted)','font-size':11},v.toFixed(0)))}
+  if(xlo<0&&xhi>0)svg.append(el('line',{x1:x(0),x2:x(0),y1:m.t,y2:H-m.b,stroke:'var(--muted)','stroke-dasharray':'4 4',opacity:.5}));
+  svg.append(el('line',{x1:m.l,x2:W-m.r,y1:y(medY),y2:y(medY),stroke:'var(--muted)','stroke-dasharray':'4 4',opacity:.5}));
+  const ql=(tx,ty,t,anc)=>svg.append(el('text',{x:tx,y:ty,'text-anchor':anc,fill:'var(--muted)','font-size':11,opacity:.8},t));
+  ql(m.l+4,m.t+12,'축소·고교체','start');ql(W-m.r-4,m.t+12,'성장·고교체','end');ql(m.l+4,H-m.b-6,'완만한 축소','start');ql(W-m.r-4,H-m.b-6,'안정 성장','end');
+  svg.append(el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'axis'}));
+  svg.append(el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'axis'}));
+  svg.append(el('text',{x:(m.l+W-m.r)/2,y:H-6,'text-anchor':'middle',fill:'var(--muted)','font-size':11},'선택 구간 업소 수 순증감률 (%)'));
+  svg.append(el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',fill:'var(--muted)','font-size':11,transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},'교체율 (진입+이탈) / 시작 업소 수 (%)'));
+  const maxBase=Math.max(1,...rows.map(d=>d.base));
+  rows.forEach(d=>{
+    const selected=mapDong.value===d.name;
+    const c=el('circle',{cx:x(d.netPct),cy:y(d.turnoverPct),r:(selected?4:0)+4+5*Math.sqrt(d.base/maxBase),fill:DISTRICT_PALETTE[d.district]||'#4c8dff',stroke:selected?'#f97316':'var(--surface)','stroke-width':selected?3:1,opacity:.85,class:'scatter-point'});
+    c.addEventListener('mousemove',e=>showTip(e,`<b>${d.name}</b><br>교체율 ${d.turnoverPct.toFixed(0)}% (진입 ${d.entryPct.toFixed(0)} · 이탈 ${d.exitPct.toFixed(0)})<br>순증 ${d.net>=0?'+':''}${fmt(d.net)}개 (${d.netPct>=0?'+':''}${d.netPct.toFixed(1)}%)<br>시작 ${fmt(d.base)}개`));
+    c.addEventListener('mouseleave',hideTip);
+    svg.append(c);
+  });
+  if(turnoverMapLegend)turnoverMapLegend.innerHTML=Object.entries(DISTRICT_PALETTE).map(([dd,cc])=>`<span><i style="background:${cc}"></i>${dd}</span>`).join('');
 }
 let checkedSeries=new Set();
 function seriesSource(type){return type==='district'?data.districts:type==='category'?data.categories:type==='dong'?data.dongs:null}
@@ -474,8 +540,8 @@ function initMap(){
     dongLegend.hidden=false;dongLegend.innerHTML=`<strong>${metricNames[metric]}</strong><span>${format(values[0])}</span>${palette.map(c=>`<i style="background:${c}"></i>`).join('')}<span>${format(values.at(-1))}</span>`;
   }
   function draw(){layer.clearLayers();const index=+mapPeriod.value,period=data.mapPeriods[index],label=periodLabel(period),points=grouped(period).sort((x,y)=>x.count-y.count),total=points.reduce((s,p)=>s+p.count,0),active=new Set(densityChecks.filter(x=>x.checked).map(x=>x.value));mapPeriodLabel.textContent=label;ticks.forEach((t,i)=>t.classList.toggle('on',i===index));mapTitle.textContent=`${label} 업소 위치 분포 (${fmt(total)}개)`;mapEl.setAttribute('aria-label',`${label} 대전 업소 위치 분포 지도`);points.forEach(p=>{const strength=p.count/scaleMax,band=strength>.35?'high':strength>.12?'medium':'low';if(!active.has(band))return;const color=band==='high'?'#dc2626':band==='medium'?'#7c3aed':'#2563eb',marker=L.circleMarker([p.lat,p.lon],{renderer:markerRenderer,radius:6+20*Math.sqrt(strength),stroke:false,fillColor:color,fillOpacity:.55}).bindTooltip(`<b>${fmt(p.count)}개</b><br>${label} · 격자 ${p.key}`);marker.on('mouseover',()=>marker.setStyle({fillOpacity:.9})).on('mouseout',()=>marker.setStyle({fillOpacity:.55}));marker.addTo(layer)})}
-  mapDistrict.addEventListener('change',()=>{populateMapDong();drawBoundary();drawDong();rescale();draw();drawDongScatter();drawGrowthMap()});
-  mapDong.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw();drawDongScatter();drawGrowthMap()});
+  mapDistrict.addEventListener('change',()=>{populateMapDong();drawBoundary();drawDong();rescale();draw();drawDongScatter();drawGrowthMap();drawTurnoverMap()});
+  mapDong.addEventListener('change',()=>{drawBoundary();drawDong();rescale();draw();drawDongScatter();drawGrowthMap();drawTurnoverMap()});
   mapCategory.addEventListener('change',()=>{rescale();draw()});
   mapPeriod.addEventListener('input',()=>{drawDong();draw()});
   dongMetric.addEventListener('change',drawDong);

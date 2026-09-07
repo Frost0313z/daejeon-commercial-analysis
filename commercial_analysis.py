@@ -114,6 +114,29 @@ def build_survival(dongs: dict, names: dict[str, tuple[str, str]]) -> list[dict]
     return rows
 
 
+def build_turnover(dongs: dict, names: dict[str, tuple[str, str]]) -> list[dict]:
+    """행정동별 회차 간 업소번호 진입·이탈을 센다.
+
+    폐업 자리에 같은 업종의 다른 업소가 들어오면 업소번호가 새로 발급되므로
+    순 업소 수는 그대로여도 이탈(left)·진입(entered)으로 잡힌다. 동 로컬 기준이라
+    다른 동으로 옮긴 소수 사례는 이탈+진입 양쪽에 한 번씩 계산된다.
+    회차별 진입−이탈을 더하면 그 구간의 순증감과 정확히 일치한다.
+    """
+    periods = sorted({period for period, _ in dongs})
+    ids_by: dict[tuple[str, str], set[str]] = defaultdict(set)  # (시점, 동코드) -> 업소번호
+    for (period, store_id), (_, code, _) in dongs.items():
+        ids_by[(period, code)].add(store_id)
+    rows = []
+    for t0, t1 in zip(periods, periods[1:]):
+        for code in sorted(names):
+            a, b = ids_by.get((t0, code), set()), ids_by.get((t1, code), set())
+            rows.append({"from_period": t0, "to_period": t1, "dong_code": code,
+                         "district": names[code][0], "dong": names[code][1],
+                         "base_stores": len(a), "left": len(a - b), "entered": len(b - a)})
+    assert len(rows) == (len(periods) - 1) * len(names)
+    return rows
+
+
 def verify(panel: list[dict]) -> None:
     """행정동 합계가 기존 자치구 패널과 일치하는지 독립 대조한다."""
     mine: dict[tuple[str, str], int] = Counter()
@@ -338,6 +361,13 @@ def main() -> None:
     survival = build_survival(dongs, names)
     write_csv("dong_survival.csv", survival)
     survival_lookup = {(r["period"], r["dong_code"]): r for r in survival}
+
+    turnover = build_turnover(dongs, names)
+    write_csv("dong_turnover.csv", turnover)
+    stamps = sorted({p for p, _ in dongs})
+    per_period = Counter(p for p, _ in dongs)
+    assert sum(r["entered"] - r["left"] for r in turnover) \
+        == per_period[stamps[-1]] - per_period[stamps[0]], "진입−이탈 합이 순증감과 어긋납니다"
 
     indicator_series = []
     for period in periods:

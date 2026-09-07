@@ -236,6 +236,7 @@ HHI(i) = Σ_j [업소수(i,j) / 업소수(i)]²
 | `data/processed/dong_indicators.csv` | 신규 | 밀도·LQ·HHI·생존율 |
 | `data/processed/dong_indicators_timeseries.csv` | 신규 | 행정동 지표 6개 시점(2025-03~2026-06) |
 | `data/processed/dong_survival.csv` | 신규 | 행정동별 고정 코호트 잔존율 |
+| `data/processed/dong_turnover.csv` | 신규 | 행정동별 회차 간 업소번호 진입·이탈(교체율) |
 | `data/processed/daejeon_dong_boundaries.geojson` | 신규 | 82개 행정동 경계 |
 | `images/09~12_*.png` | 신규 | 정적 시각화 4개 |
 | `dashboard-template.html`, `dashboard.py` | 수정 | 행정동 코로플레스 레이어 |
