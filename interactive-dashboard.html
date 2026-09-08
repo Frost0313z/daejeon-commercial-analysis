@@ -33,7 +33,10 @@
     if(!only)return;
     var nots=only.split(',').map(function(s){return ':not([data-section="'+s.replace(/[^a-z]/g,'')+'"])'}).join('');
     var css='header,.notice,section'+nots+'{display:none}'
-      +'main{padding:10px 12px 20px}.period-sticky{padding-top:8px;margin-bottom:10px}.panel{margin-bottom:10px}';
+      +'main{padding:10px 12px 20px}.period-sticky{padding-top:8px;margin-bottom:10px}.panel{margin-bottom:10px}'
+      // 좁은 임베드 칸에서 지도·컨트롤이 화면을 다 먹지 않도록 조밀하게
+      +'#map{height:360px}.panel{padding:14px}h2{font-size:17px;margin-bottom:12px}'
+      +'.controls{gap:8px;margin-bottom:10px}.foot{font-size:12px}';
     var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
   })();
   </script>
