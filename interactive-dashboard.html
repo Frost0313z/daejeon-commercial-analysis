@@ -24,6 +24,19 @@
     .controls.fill{flex-wrap:nowrap}.controls.fill label{flex:1 1 0;min-width:0}.controls.fill select{width:100%}@media(max-width:700px){.controls.fill{flex-wrap:wrap}.controls.fill label{flex:1 1 160px}}
     .panel-head{display:flex;align-items:center;gap:8px;margin-bottom:16px}.panel-head h2{margin:0}
   </style>
+  <script>
+  // 임베드용 "섹션만 보기" 모드. ?only=map,heatmap 처럼 data-section 값을 쉼표로 나열하면
+  // 그 섹션과 기간 슬라이더만 남기고 헤더·안내·나머지 섹션을 숨긴다 (AI 비서 앱이 주제별로 사용).
+  // 본문 파싱 전에 CSS만 주입하므로 지도 초기화 등 본체 로직에는 영향이 없다.
+  (function(){
+    var only=new URLSearchParams(location.search).get('only');
+    if(!only)return;
+    var nots=only.split(',').map(function(s){return ':not([data-section="'+s.replace(/[^a-z]/g,'')+'"])'}).join('');
+    var css='header,.notice,section'+nots+'{display:none}'
+      +'main{padding:10px 12px 20px}.period-sticky{padding-top:8px;margin-bottom:10px}.panel{margin-bottom:10px}';
+    var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+  })();
+  </script>
 </head>
 <body>
 <main>
@@ -46,13 +59,13 @@
     <div class="period-readout" id="periodReadout"></div>
   </div>
   <div class="notice">아래 핵심 지표·증감 그래프·히트맵·상세 결과는 위 슬라이더에서 고른 두 시점의 비교입니다. 2024년 말 수집범위 단절 이전은 같은 기준으로 볼 수 없어, 슬라이더는 이후로 안정된 2025-03 ~ 2026-06 6개 시점만 다룹니다. 두 손잡이를 각각 드래그해 시작·종료 시점을 조정할 수 있고, 슬라이더는 스크롤해도 상단에 고정됩니다.</div>
-  <section class="stats" aria-label="핵심 지표">
+  <section class="stats" data-section="stats" aria-label="핵심 지표">
     <div class="card"><div class="label">시작 업소 수</div><div class="value" id="startValue"></div></div>
     <div class="card"><div class="label">종료 업소 수</div><div class="value" id="endValue"></div></div>
     <div class="card"><div class="label">증감</div><div class="value positive" id="changeValue"></div></div>
     <div class="card"><div class="label">증감률</div><div class="value positive" id="growthValue"></div></div>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="map">
     <h2 id="mapTitle">업소 위치 분포</h2>
     <div class="period-slider">
       <span>관측 시점</span>
@@ -86,20 +99,20 @@
     <div class="scatter-legend" id="scatterLegend"></div>
     <p class="foot">가로축은 인구 1,000명당 업소 수(로그 스케일), 세로축은 업종 집중도 HHI(낮을수록 다양)입니다. 맨 위 슬라이더에서 고른 구간의 시작 → 종료 변화를 선으로, 종료 시점 위치를 점으로 표시하며 지도의 자치구 선택이 반영됩니다.</p>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="heatmap">
     <h2 id="heatmapTitle">자치구 × 업종 증감률</h2>
     <div class="heatmap-wrap"><svg id="heatmapChart" viewBox="0 0 760 340" role="img" aria-label="자치구별 업종별 증감률 히트맵"></svg></div>
     <div class="heatmap-legend" id="heatmapLegend"></div>
     <p class="foot">칸에 마우스를 올리면 자치구·업종별 시작·종료 업소 수와 증감률을 확인할 수 있습니다.</p>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="growth">
     <h2 id="growthMapTitle">상권 성장·위축 진단</h2>
     <div class="growth-summary" id="growthSummary"></div>
     <svg id="growthMap" viewBox="0 0 640 400" role="img" aria-label="행정동 업소 수 증감률과 잔존율 산점도"></svg>
     <div class="scatter-legend" id="growthMapLegend"></div>
     <p class="foot">가로축은 위 슬라이더에서 고른 구간의 업소 수 증감률, 세로축은 2025년 3월에 있던 업소가 같은 번호로 남아 있는 비율(잔존율)입니다. 점 크기는 순증·순감 규모, 점선은 증감률 0%와 잔존율 중앙값입니다. 오른쪽 위(부흥)일수록 업소가 늘고 기존 업소도 잘 남는 상권, 왼쪽 아래(위축)일수록 업소가 줄고 교체도 빠른 상권입니다. 지도의 자치구 선택이 반영됩니다.</p>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="turnover">
     <div class="panel-head">
       <h2 id="turnoverTitle">행정동 점포 교체율</h2>
       <span class="info-hint"><button type="button" class="info-icon" aria-label="교체율 설명 보기" aria-describedby="turnoverInfoCallout">?</button>
@@ -116,7 +129,7 @@
     <div class="scatter-legend" id="turnoverMapLegend"></div>
     <p class="foot">폐업 자리에 같은 업종의 다른 업소가 들어오면 업소번호가 새로 발급되므로, 순 업소 수가 그대로여도 폐업(이탈)과 창업(진입)이 함께 일어납니다. 세로축 <b>교체율</b>은 선택 구간의 회차별 (진입+이탈) 건수 합을 시작 업소 수로 나눈 값으로, 같은 자리가 두 번 갈리면 두 번 세므로 100%를 넘을 수 있습니다. 가로축은 순증감률입니다. 세로로 높을수록 물갈이가 심하고, 가로로 0 근처인데 위쪽이면 <b>폐업·창업이 맞물려 겉으로는 제자리인 상권</b>입니다. 성장 진단이 "기존 업소가 남았나(잔존율)"를 봤다면 이 그래프는 "얼마나 갈렸나"를 봅니다. 지도의 자치구 선택이 반영됩니다.</p>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="series">
     <h2>관측 시점별 업소 수</h2>
     <div class="chart-split">
       <div class="chart-side">
@@ -132,7 +145,7 @@
     </div>
     <p class="foot">2025년 3월부터 2026년 6월까지 6개 관측 시점을 표시합니다. 자치구·업종·행정동을 선택하면 여러 항목을 겹쳐 비교할 수 있습니다(행정동은 82개라 자치구를 먼저 골라야 합니다). 마우스를 점에 올리면 수치를 확인할 수 있습니다.</p>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="bar">
     <h2 id="barTitle">자치구별 증감</h2>
     <div class="chart-split">
       <div class="chart-side">
@@ -150,7 +163,7 @@
       </div>
     </div>
   </section>
-  <section class="panel">
+  <section class="panel" data-section="table">
     <h2 id="tableTitle">자치구별 상세 결과</h2>
     <div style="overflow-x:auto"><table><thead><tr><th>항목</th><th id="colStart">2025-03</th><th id="colEnd">2026-03</th><th>증감</th><th>증감률</th><th>잔존율</th></tr></thead><tbody id="resultRows"></tbody></table></div>
     <p class="foot">표에 쓰인 수는 공공데이터 파일에 수록된 업소 수입니다. 매출·고용·실제 개폐업 건수를 의미하지 않습니다.</p>
@@ -572,6 +585,21 @@ infoHints.forEach(h=>h.querySelector('.info-icon').addEventListener('click',e=>{
 }));
 document.addEventListener('click',e=>{if(!e.target.closest('.info-hint'))infoHints.forEach(h=>h.classList.remove('show'))});
 populateBarDistrict();populatePeriods();updatePeriod();populateSeries();initMap();
+</script>
+<script>
+// 임베드 프리셋 (섹션만 보기 모드에서만): ?metric=density|hhi|survival ?category=<업종>
+// ?bar=district|category|dong ?sort=change|growth|score ?series=city|district|category|dong
+// 본체 초기화가 끝난 뒤 셀렉트 값을 바꾸고 change 이벤트를 쏴서 기존 핸들러가 다시 그리게 한다.
+(function(){
+  var p=new URLSearchParams(location.search);
+  if(!p.get('only'))return;
+  function set(id,val){
+    var el=document.getElementById(id);if(!el||val==null)return;
+    el.value=val;if(el.value===val)el.dispatchEvent(new Event('change'));
+  }
+  set('dongMetric',p.get('metric'));set('mapCategory',p.get('category'));
+  set('barType',p.get('bar'));set('barSort',p.get('sort'));set('seriesType',p.get('series'));
+})();
 </script>
 </body>
 </html>
